@@ -1,0 +1,55 @@
+// =====================================================================
+// Projeto 1 - Medidas DAX (básicas: o foco deste projeto é Power Query)
+// Crie uma tabela vazia "_Medidas" (Inserir dados > OK) para guardar todas elas.
+// =====================================================================
+
+Consumo (GWh) =
+DIVIDE ( SUM ( fFaturamento[Consumo_kWh] ), 1000000 )
+
+Faturamento (R$) =
+SUM ( fFaturamento[Valor_Faturado] )
+
+Tarifa Média (R$/kWh) =
+DIVIDE ( [Faturamento (R$)], SUM ( fFaturamento[Consumo_kWh] ) )
+
+// Clientes é um ESTOQUE, não um fluxo: somar jan+fev+mar contaria o mesmo cliente 3 vezes.
+// Por isso a medida pega só o último mês visível no filtro.
+Clientes =
+VAR UltimaData = MAX ( fFaturamento[Data] )
+RETURN
+    CALCULATE ( SUM ( fFaturamento[Qtd_Clientes] ), fFaturamento[Data] = UltimaData )
+
+// Soma de clientes mês a mês = "clientes-mês"; dividir o consumo por ela dá a média mensal correta.
+Consumo Médio por Cliente (kWh/mês) =
+DIVIDE ( SUM ( fFaturamento[Consumo_kWh] ), SUM ( fFaturamento[Qtd_Clientes] ) )
+
+// Meta só dos meses que já têm realizado (nov e dez/2026 ainda não aconteceram).
+Meta (GWh) =
+VAR UltimaDataComDados = CALCULATE ( MAX ( fFaturamento[Data] ), ALL ( fFaturamento ) )
+RETURN
+    CALCULATE ( SUM ( fMetas[Meta_GWh] ), KEEPFILTERS ( dCalendario[Data] <= UltimaDataComDados ) )
+
+Meta Ano Completo (GWh) =
+SUM ( fMetas[Meta_GWh] )
+
+% Atingimento da Meta =
+DIVIDE ( [Consumo (GWh)], [Meta (GWh)] )
+
+Desvio da Meta (GWh) =
+[Consumo (GWh)] - [Meta (GWh)]
+
+// Use em "Formatação condicional > Cor da fonte > Valor do campo"
+Cor Atingimento =
+SWITCH (
+    TRUE (),
+    ISBLANK ( [% Atingimento da Meta] ), BLANK (),
+    [% Atingimento da Meta] >= 1, "#2E7D32",
+    [% Atingimento da Meta] >= 0.97, "#F9A825",
+    "#C62828"
+)
+
+% do Consumo Total =
+DIVIDE ( [Consumo (GWh)], CALCULATE ( [Consumo (GWh)], ALLSELECTED ( fFaturamento[Classe] ) ) )
+
+Título Dinâmico =
+"Mercado de energia — " & SELECTEDVALUE ( dRegional[Regional], "todas as regionais" )

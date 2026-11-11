@@ -1,0 +1,7 @@
+# gerados por src/gerar_dados.py e pelo pipeline (recriáveis)
+dados_fonte/
+entrada/
+processados/
+rejeitados/
+logs/
+__pycache__/

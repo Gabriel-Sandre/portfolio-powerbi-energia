@@ -1,0 +1,46 @@
+// =====================================================================
+// Projeto 2 - Tabelas calculadas (Modelagem > Nova tabela)
+// =====================================================================
+
+// ---------------------------------------------------------------------
+// dCalendario: anos completos que cobrem os dados (inteligência de tempo exige isso).
+// Depois: Marcar como tabela de datas (coluna Date).
+// Classificar "Mês" por "Mês Nº" e "Mês/Ano" por "AnoMes".
+// ---------------------------------------------------------------------
+dCalendario =
+VAR DataMin = DATE ( YEAR ( MIN ( fInterrupcoes[Data] ) ), 1, 1 )
+VAR DataMax = DATE ( YEAR ( MAX ( fInterrupcoes[Data] ) ), 12, 31 )
+RETURN
+    ADDCOLUMNS (
+        CALENDAR ( DataMin, DataMax ),
+        "Ano", YEAR ( [Date] ),
+        "Mês Nº", MONTH ( [Date] ),
+        "Mês", SWITCH ( MONTH ( [Date] ), 1, "Jan", 2, "Fev", 3, "Mar", 4, "Abr", 5, "Mai", 6, "Jun",
+                        7, "Jul", 8, "Ago", 9, "Set", 10, "Out", 11, "Nov", 12, "Dez" ),
+        "AnoMes", YEAR ( [Date] ) * 100 + MONTH ( [Date] ),
+        "Mês/Ano", SWITCH ( MONTH ( [Date] ), 1, "Jan", 2, "Fev", 3, "Mar", 4, "Abr", 5, "Mai", 6, "Jun",
+                            7, "Jul", 8, "Ago", 9, "Set", 10, "Out", 11, "Nov", 12, "Dez" )
+                     & "/" & RIGHT ( YEAR ( [Date] ), 2 ),
+        "Trimestre", "T" & QUARTER ( [Date] ),
+        "Período Climático", IF ( MONTH ( [Date] ) IN { 12, 1, 2, 3 }, "Verão (chuvas)", "Demais meses" ),
+        "Tem Dados", [Date] <= MAX ( fInterrupcoes[Data] )
+    )
+
+
+// ---------------------------------------------------------------------
+// Parâmetro de campo: um único gráfico que alterna entre DEC e FEC.
+// O jeito mais fácil é criar pela interface: Modelagem > Novos parâmetros > Campos,
+// escolhendo as medidas [DEC (h)] e [FEC (vezes)]. O Power BI gera exatamente isto:
+// ---------------------------------------------------------------------
+Indicador =
+{
+    ( "DEC (h)", NAMEOF ( '_Medidas'[DEC (h)] ), 0 ),
+    ( "FEC (vezes)", NAMEOF ( '_Medidas'[FEC (vezes)] ), 1 )
+}
+
+
+// ---------------------------------------------------------------------
+// Parâmetro "Top N" (Modelagem > Novos parâmetros > Intervalo numérico):
+//   Nome: Top N | Mínimo 3 | Máximo 15 | Incremento 1 | Padrão 5
+// O Power BI cria a tabela 'Top N' e a medida [Valor Top N].
+// ---------------------------------------------------------------------

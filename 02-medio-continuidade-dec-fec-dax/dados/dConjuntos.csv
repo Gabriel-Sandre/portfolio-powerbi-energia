@@ -1,0 +1,40 @@
+Conjunto_ID;Conjunto;Municipio;Regional;Perfil;Clientes_Ref;Limite_DEC_Anual;Limite_FEC_Anual
+CJ001;Centro;Rio de Janeiro;Capital;urbano;95000;7,8;5,8
+CJ002;Copacabana;Rio de Janeiro;Capital;urbano;120000;6,7;5,3
+CJ003;Botafogo;Rio de Janeiro;Capital;urbano;105000;7,1;6,0
+CJ004;Tijuca;Rio de Janeiro;Capital;urbano;110000;8,4;4,6
+CJ005;Méier;Rio de Janeiro;Capital;urbano;98000;8,1;4,5
+CJ006;Barra da Tijuca;Rio de Janeiro;Capital;urbano;130000;7,5;6,0
+CJ007;Recreio;Rio de Janeiro;Capital;urbano;70000;8,2;5,6
+CJ008;Ilha do Governador;Rio de Janeiro;Capital;urbano;75000;8,2;4,9
+CJ009;Jacarepaguá;Rio de Janeiro;Capital;periferia;150000;10,6;7,0
+CJ010;Madureira;Rio de Janeiro;Capital;periferia;125000;8,2;6,3
+CJ011;Penha;Rio de Janeiro;Capital;periferia;90000;9,7;6,0
+CJ012;Irajá;Rio de Janeiro;Capital;periferia;85000;8,6;5,9
+CJ013;Pavuna;Rio de Janeiro;Capital;periferia;80000;10,1;5,9
+CJ014;Bangu;Rio de Janeiro;Capital;periferia;140000;10,6;6,1
+CJ015;Realengo;Rio de Janeiro;Capital;periferia;95000;10,4;7,0
+CJ016;Campo Grande;Rio de Janeiro;Capital;periferia;175000;8,4;6,9
+CJ017;Santa Cruz;Rio de Janeiro;Capital;periferia;110000;10,7;5,9
+CJ018;Guaratiba;Rio de Janeiro;Capital;periferia;45000;9,6;7,3
+CJ019;Duque de Caxias;Duque de Caxias;Baixada Fluminense;periferia;160000;9,4;6,4
+CJ020;Xerém;Duque de Caxias;Baixada Fluminense;interior;35000;13,4;8,9
+CJ021;Nova Iguaçu;Nova Iguaçu;Baixada Fluminense;periferia;170000;8,8;7,3
+CJ022;Belford Roxo;Belford Roxo;Baixada Fluminense;periferia;120000;9,4;7,1
+CJ023;São João de Meriti;São João de Meriti;Baixada Fluminense;periferia;115000;9,0;5,5
+CJ024;Nilópolis;Nilópolis;Baixada Fluminense;periferia;55000;10,7;7,0
+CJ025;Mesquita;Mesquita;Baixada Fluminense;periferia;58000;8,3;6,9
+CJ026;Queimados;Queimados;Baixada Fluminense;periferia;50000;8,2;6,3
+CJ027;Japeri;Japeri;Baixada Fluminense;periferia;35000;8,4;6,2
+CJ028;Seropédica;Seropédica;Baixada Fluminense;interior;30000;14,4;7,8
+CJ029;Itaguaí;Itaguaí;Baixada Fluminense;interior;45000;15,9;7,8
+CJ030;Volta Redonda;Volta Redonda;Sul Fluminense;urbano;110000;6,7;5,0
+CJ031;Barra Mansa;Barra Mansa;Sul Fluminense;urbano;70000;8,2;6,0
+CJ032;Resende;Resende;Sul Fluminense;urbano;55000;7,7;6,0
+CJ033;Barra do Piraí;Barra do Piraí;Sul Fluminense;interior;38000;13,3;9,6
+CJ034;Valença;Valença;Sul Fluminense;interior;30000;12,0;8,1
+CJ035;Piraí;Piraí;Sul Fluminense;interior;15000;16,0;7,9
+CJ036;Vassouras;Vassouras;Centro-Sul Fluminense;interior;17000;11,5;9,2
+CJ037;Miguel Pereira;Miguel Pereira;Centro-Sul Fluminense;interior;14000;11,0;9,6
+CJ038;Paty do Alferes;Paty do Alferes;Centro-Sul Fluminense;interior;12000;11,2;9,5
+CJ039;Mendes;Mendes;Centro-Sul Fluminense;interior;9000;14,9;9,8

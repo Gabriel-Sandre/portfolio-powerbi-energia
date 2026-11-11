@@ -1,0 +1,10 @@
+Causa_ID;Causa;Grupo;Responsabilidade
+1;Descarga atmosférica;Meio ambiente;Externa
+2;Vegetação na rede;Meio ambiente;Externa
+3;Falha em equipamento;Rede própria;Interna
+4;Sobrecarga;Rede própria;Interna
+5;Furto de cabos e equipamentos;Terceiros;Externa
+6;Abalroamento de poste;Terceiros;Externa
+7;Restrição de acesso (área de risco);Terceiros;Externa
+8;Manutenção programada;Programada;Interna
+9;Causa não identificada;Não identificada;Interna

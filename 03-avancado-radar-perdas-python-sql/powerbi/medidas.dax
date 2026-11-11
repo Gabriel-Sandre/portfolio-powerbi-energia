@@ -1,0 +1,165 @@
+// =====================================================================
+// Projeto 3 - Tabelas e medidas DAX
+// =====================================================================
+
+// ---------- Tabela calculada (Modelagem > Nova tabela) ----------
+// Marcar como tabela de datas (coluna Date). Classificar "Mês/Ano" por "AnoMes".
+dCalendario =
+ADDCOLUMNS (
+    CALENDAR ( DATE ( 2025, 1, 1 ), DATE ( 2026, 12, 31 ) ),
+    "Ano", YEAR ( [Date] ),
+    "AnoMes", YEAR ( [Date] ) * 100 + MONTH ( [Date] ),
+    "Mês/Ano", SWITCH ( MONTH ( [Date] ), 1, "Jan", 2, "Fev", 3, "Mar", 4, "Abr", 5, "Mai", 6, "Jun",
+                        7, "Jul", 8, "Ago", 9, "Set", 10, "Out", 11, "Nov", 12, "Dez" )
+                 & "/" & RIGHT ( YEAR ( [Date] ), 2 )
+)
+
+// ---------- Parâmetro What-if (Modelagem > Novos parâmetros > Intervalo numérico) ----------
+// Nome: Tarifa Referencia | 0,50 a 1,50 | incremento 0,05 | padrão 0,95  (R$/kWh)
+// Permite à diretoria simular "quanto vale" a energia perdida com outra tarifa.
+
+
+// ===================== Balanço energético =====================
+
+Energia Injetada (MWh) =
+DIVIDE ( SUM ( fBalanco[Energia_Injetada_kWh] ), 1000 )
+
+Energia Faturada (MWh) =
+DIVIDE ( SUM ( fBalanco[Energia_Faturada_kWh] ), 1000 )
+
+Perda Técnica (MWh) =
+DIVIDE ( SUM ( fBalanco[Perda_Tecnica_kWh] ), 1000 )
+
+PNT (MWh) =
+DIVIDE ( SUM ( fBalanco[PNT_kWh] ), 1000 )
+
+Perda Total (MWh) =
+[Perda Técnica (MWh)] + [PNT (MWh)]
+
+PNT % da Energia Injetada =
+DIVIDE ( [PNT (MWh)], [Energia Injetada (MWh)] )
+
+// Indicador usado pelo regulador: PNT sobre o mercado (energia faturada), e não sobre a injetada
+PNT % sobre o Mercado =
+DIVIDE ( [PNT (MWh)], [Energia Faturada (MWh)] )
+
+Tarifa de Referência (R$/kWh) =
+SELECTEDVALUE ( 'Tarifa Referencia'[Tarifa Referencia], 0.95 )
+
+PNT (R$) =
+[PNT (MWh)] * 1000 * [Tarifa de Referência (R$/kWh)]
+
+PNT % 12 Meses =
+VAR Referencia = MAX ( dCalendario[Date] )
+RETURN
+    CALCULATE (
+        [PNT % da Energia Injetada],
+        DATESINPERIOD ( dCalendario[Date], Referencia, -12, MONTH )
+    )
+
+
+// ===================== Score de risco =====================
+// fScore tem um score por cliente POR MÊS. Nas medidas de "situação atual"
+// é preciso olhar só para o último mês do filtro (senão o cliente conta 18 vezes).
+
+Última Competência Score =
+MAX ( fScore[Competencia] )
+
+Clientes Monitorados =
+VAR Ultima = [Última Competência Score]
+RETURN
+    CALCULATE ( DISTINCTCOUNT ( fScore[Cliente_ID] ), fScore[Competencia] = Ultima )
+
+Clientes Risco Alto =
+VAR Ultima = [Última Competência Score]
+RETURN
+    CALCULATE ( DISTINCTCOUNT ( fScore[Cliente_ID] ), fScore[Competencia] = Ultima, fScore[Faixa] = "Alto" )
+
+Clientes Risco Médio =
+VAR Ultima = [Última Competência Score]
+RETURN
+    CALCULATE ( DISTINCTCOUNT ( fScore[Cliente_ID] ), fScore[Competencia] = Ultima, fScore[Faixa] = "Médio" )
+
+% Clientes Risco Alto =
+DIVIDE ( [Clientes Risco Alto], [Clientes Monitorados] )
+
+Score Médio =
+AVERAGE ( fScore[Score] )
+
+Clientes na Fila de Inspeção =
+COUNTROWS ( FilaInspecao )
+
+
+// ===================== Inspeções e efetividade =====================
+
+Inspeções =
+COUNTROWS ( fInspecoes )
+
+Irregularidades =
+SUM ( fInspecoes[Irregular] )
+
+Taxa de Acerto =
+DIVIDE ( [Irregularidades], [Inspeções] )
+
+// Amostra sem viés: inspeções aleatórias mostram a taxa "natural" de irregularidade
+Taxa de Acerto Aleatória =
+CALCULATE ( [Taxa de Acerto], fInspecoes[Origem] = "Aleatória" )
+
+// Backtest: entre os clientes inspecionados ao acaso, quem JÁ estava com score alto no mês anterior?
+Taxa de Acerto Score Alto =
+CALCULATE ( [Taxa de Acerto], fInspecoes[Origem] = "Aleatória", fInspecoes[Faixa_Mes_Anterior] = "Alto" )
+
+Taxa de Acerto Score Baixo =
+CALCULATE ( [Taxa de Acerto], fInspecoes[Origem] = "Aleatória", fInspecoes[Faixa_Mes_Anterior] = "Baixo" )
+
+Ganho do Score (x) =
+DIVIDE ( [Taxa de Acerto Score Alto], [Taxa de Acerto Aleatória] )
+
+// "Se as mesmas equipes tivessem ido só aos clientes de score alto..."
+Irregularidades Potenciais com Score =
+[Inspeções] * [Taxa de Acerto Score Alto]
+
+Irregularidades Adicionais com Score =
+[Irregularidades Potenciais com Score] - [Irregularidades]
+
+Energia Recuperada (MWh) =
+DIVIDE ( SUM ( fInspecoes[Energia_Recuperada_kWh] ), 1000 )
+
+Receita Recuperada (R$) =
+[Energia Recuperada (MWh)] * 1000 * [Tarifa de Referência (R$/kWh)]
+
+Energia Recuperada por Inspeção (kWh) =
+DIVIDE ( SUM ( fInspecoes[Energia_Recuperada_kWh] ), [Inspeções] )
+
+
+// ===================== Saúde do pipeline =====================
+
+Última Execução =
+MAX ( LogExecucao[Fim] )
+
+Status Última Execução =
+VAR UltimoId = MAX ( LogExecucao[Execucao_ID] )
+RETURN
+    LOOKUPVALUE ( LogExecucao[Status], LogExecucao[Execucao_ID], UltimoId )
+
+Execuções =
+COUNTROWS ( LogExecucao )
+
+Linhas Lidas =
+SUM ( LogExecucao[Linhas_Lidas] )
+
+Linhas Rejeitadas =
+SUM ( LogExecucao[Linhas_Rejeitadas] )
+
+% Rejeição =
+DIVIDE ( [Linhas Rejeitadas], [Linhas Lidas] )
+
+Duração Média Execução (min) =
+AVERAGEX ( LogExecucao, DATEDIFF ( LogExecucao[Inicio], LogExecucao[Fim], SECOND ) / 60 )
+
+Texto Atualização =
+"Dados atualizados em " & FORMAT ( [Última Execução], "dd/mm/yyyy hh:nn" )
+    & " · status: " & [Status Última Execução]
+
+Cor Status Pipeline =
+SWITCH ( [Status Última Execução], "Sucesso", "#2E7D32", "Concluído com erros", "#F9A825", "#C62828" )

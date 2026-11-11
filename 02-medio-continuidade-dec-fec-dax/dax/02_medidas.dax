@@ -1,0 +1,267 @@
+// =====================================================================
+// Projeto 2 - Medidas DAX: indicadores de continuidade DEC e FEC
+// Guarde todas numa tabela "_Medidas" (Inserir dados > OK) e organize em
+// Pastas de exibição (painel Propriedades) com os nomes dos blocos abaixo.
+//
+// Regra (simplificada a partir do PRODIST Módulo 8 / ANEEL):
+//   DEC = Σ (clientes afetados × horas interrompidas) / clientes do conjunto   [horas]
+//   FEC = Σ (clientes afetados) / clientes do conjunto                          [vezes]
+//   - calculado MÊS A MÊS e somado no período
+//   - só interrupções >= 3 minutos
+//   - interrupções expurgáveis (dia crítico) ficam fora do indicador oficial
+// =====================================================================
+
+
+// ===================== 1. Base =====================
+
+Interrupções =
+COUNTROWS ( fInterrupcoes )
+
+Interrupções no Indicador =
+CALCULATE (
+    [Interrupções],
+    fInterrupcoes[Duracao_min] >= 3,
+    fInterrupcoes[Expurgavel] = "N"
+)
+
+// CHI = Consumidor-Hora Interrompido (o numerador do DEC)
+CHI (h) =
+CALCULATE (
+    SUMX ( fInterrupcoes, fInterrupcoes[Clientes_Afetados] * fInterrupcoes[Duracao_min] / 60 ),
+    fInterrupcoes[Duracao_min] >= 3,
+    fInterrupcoes[Expurgavel] = "N"
+)
+
+// CI = Consumidores Interrompidos (o numerador do FEC)
+CI =
+CALCULATE (
+    SUM ( fInterrupcoes[Clientes_Afetados] ),
+    fInterrupcoes[Duracao_min] >= 3,
+    fInterrupcoes[Expurgavel] = "N"
+)
+
+// Denominador do mês. A base de clientes é registrada no dia 1; se o visual estiver
+// filtrado num dia qualquer (ex.: 15/01), esta medida ainda encontra a base de janeiro.
+// Uso interno: só faz sentido com UM mês no contexto (por isso é usada dentro do SUMX abaixo).
+Clientes Base (mês) =
+CALCULATE (
+    SUM ( fBaseClientes[Clientes] ),
+    REMOVEFILTERS ( dCalendario ),
+    VALUES ( dCalendario[AnoMes] )
+)
+
+// Para exibir em cartões: clientes do último mês visível (clientes são estoque, não se somam meses)
+Clientes Atendidos =
+VAR UltimoMes = MAX ( fBaseClientes[Data] )
+RETURN
+    CALCULATE ( SUM ( fBaseClientes[Clientes] ), fBaseClientes[Data] = UltimoMes )
+
+
+// ===================== 2. Indicadores =====================
+
+// Itera mês a mês: em cada mês divide o CHI pelos clientes daquele mês e soma os resultados.
+// Funciona em qualquer recorte: conjunto, regional, causa (o denominador não é afetado
+// pelo filtro de causa, então dá para ver "quanto do DEC veio de vegetação").
+DEC (h) =
+SUMX (
+    VALUES ( dCalendario[AnoMes] ),
+    DIVIDE ( [CHI (h)], [Clientes Base (mês)] )
+)
+
+FEC (vezes) =
+SUMX (
+    VALUES ( dCalendario[AnoMes] ),
+    DIVIDE ( [CI], [Clientes Base (mês)] )
+)
+
+// Tempo médio que cada cliente interrompido ficou sem energia
+Duração Média por Interrupção (h) =
+DIVIDE ( [DEC (h)], [FEC (vezes)] )
+
+
+// ===================== 3. Inteligência de tempo =====================
+
+// Janela móvel de 12 meses terminando no fim do período visível. É o número comparável ao
+// limite ANUAL. Se o filtro for "2026" (que só tem dados até outubro), a janela termina em
+// outubro (último dado), e não em dezembro; meses futuros ficam em branco.
+DEC 12 Meses (h) =
+VAR UltimaDataComDados = CALCULATE ( MAX ( fInterrupcoes[Data] ), ALL ( fInterrupcoes ) )
+VAR Referencia = MIN ( MAX ( dCalendario[Date] ), UltimaDataComDados )
+RETURN
+    IF (
+        MIN ( dCalendario[Date] ) <= UltimaDataComDados,
+        CALCULATE ( [DEC (h)], DATESINPERIOD ( dCalendario[Date], Referencia, -12, MONTH ) )
+    )
+
+FEC 12 Meses (vezes) =
+VAR UltimaDataComDados = CALCULATE ( MAX ( fInterrupcoes[Data] ), ALL ( fInterrupcoes ) )
+VAR Referencia = MIN ( MAX ( dCalendario[Date] ), UltimaDataComDados )
+RETURN
+    IF (
+        MIN ( dCalendario[Date] ) <= UltimaDataComDados,
+        CALCULATE ( [FEC (vezes)], DATESINPERIOD ( dCalendario[Date], Referencia, -12, MONTH ) )
+    )
+
+DEC Acumulado no Ano (h) =
+CALCULATE ( [DEC (h)], DATESYTD ( dCalendario[Date] ) )
+
+FEC Acumulado no Ano (vezes) =
+CALCULATE ( [FEC (vezes)], DATESYTD ( dCalendario[Date] ) )
+
+// ARMADILHA CLÁSSICA: com o filtro "2026" (dados só até outubro), um SAMEPERIODLASTYEAR puro
+// compara jan-out/2026 com jan-DEZ/2025, e a melhora aparece como -26% em vez de -7%.
+// Por isso, antes de voltar um ano, a medida corta as datas que ainda não têm dados.
+DEC Ano Anterior (h) =
+CALCULATE (
+    [DEC (h)],
+    CALCULATETABLE ( SAMEPERIODLASTYEAR ( dCalendario[Date] ), dCalendario[Tem Dados] = TRUE () )
+)
+
+FEC Ano Anterior (vezes) =
+CALCULATE (
+    [FEC (vezes)],
+    CALCULATETABLE ( SAMEPERIODLASTYEAR ( dCalendario[Date] ), dCalendario[Tem Dados] = TRUE () )
+)
+
+Var DEC vs Ano Anterior % =
+DIVIDE ( [DEC (h)] - [DEC Ano Anterior (h)], [DEC Ano Anterior (h)] )
+
+Var FEC vs Ano Anterior % =
+DIVIDE ( [FEC (vezes)] - [FEC Ano Anterior (vezes)], [FEC Ano Anterior (vezes)] )
+
+
+// ===================== 4. Limites regulatórios =====================
+
+// Com vários conjuntos no filtro, o limite agregado é a média PONDERADA pelos clientes
+// (uma média simples daria o mesmo peso a Mendes e a Campo Grande).
+Limite DEC Anual (h) =
+DIVIDE (
+    SUMX ( dConjuntos, dConjuntos[Limite_DEC_Anual] * dConjuntos[Clientes_Ref] ),
+    SUM ( dConjuntos[Clientes_Ref] )
+)
+
+Limite FEC Anual (vezes) =
+DIVIDE (
+    SUMX ( dConjuntos, dConjuntos[Limite_FEC_Anual] * dConjuntos[Clientes_Ref] ),
+    SUM ( dConjuntos[Clientes_Ref] )
+)
+
+% do Limite DEC =
+DIVIDE ( [DEC 12 Meses (h)], [Limite DEC Anual (h)] )
+
+% do Limite FEC =
+DIVIDE ( [FEC 12 Meses (vezes)], [Limite FEC Anual (vezes)] )
+
+Folga para o Limite DEC (h) =
+[Limite DEC Anual (h)] - [DEC 12 Meses (h)]
+
+Status DEC =
+SWITCH (
+    TRUE (),
+    ISBLANK ( [DEC 12 Meses (h)] ), BLANK (),
+    [% do Limite DEC] > 1, "Acima do limite",
+    [% do Limite DEC] > 0.9, "Atenção",
+    "Dentro do limite"
+)
+
+// Formatação condicional > Cor de fundo > Valor do campo
+Cor Status DEC =
+SWITCH (
+    [Status DEC],
+    "Acima do limite", "#C62828",
+    "Atenção", "#F9A825",
+    "Dentro do limite", "#2E7D32"
+)
+
+Conjuntos Acima do Limite DEC =
+COUNTROWS (
+    FILTER ( VALUES ( dConjuntos[Conjunto_ID] ), [% do Limite DEC] > 1 )
+)
+
+% Conjuntos Acima do Limite =
+DIVIDE ( [Conjuntos Acima do Limite DEC], COUNTROWS ( VALUES ( dConjuntos[Conjunto_ID] ) ) )
+
+
+// ===================== 5. Rankings e Pareto =====================
+
+Ranking DEC Conjunto =
+IF (
+    HASONEVALUE ( dConjuntos[Conjunto] ),
+    RANKX ( ALLSELECTED ( dConjuntos[Conjunto] ), [DEC 12 Meses (h)], , DESC, DENSE )
+)
+
+// Pareto: % acumulado do DEC, da causa que mais pesa para a que menos pesa.
+// Gráfico de colunas (DEC por causa) + linha (esta medida) = o clássico 80/20.
+DEC % Acumulado (Pareto) =
+VAR DecCausaAtual = [DEC (h)]
+VAR DecTotal = CALCULATE ( [DEC (h)], ALLSELECTED ( dCausas[Causa] ) )
+VAR DecAcumulado =
+    SUMX (
+        FILTER ( ALLSELECTED ( dCausas[Causa] ), CALCULATE ( [DEC (h)] ) >= DecCausaAtual ),
+        CALCULATE ( [DEC (h)] )
+    )
+RETURN
+    IF ( NOT ISBLANK ( DecCausaAtual ), DIVIDE ( DecAcumulado, DecTotal ) )
+
+// Mostra o DEC só das N maiores causas (N vem do parâmetro 'Top N').
+// Coloque no gráfico de barras por causa: as demais somem sozinhas.
+DEC Top N Causas (h) =
+VAR N = SELECTEDVALUE ( 'Top N'[Top N], 5 )
+VAR TopCausas = TOPN ( N, ALLSELECTED ( dCausas[Causa] ), [DEC (h)], DESC )
+RETURN
+    CALCULATE ( [DEC (h)], KEEPFILTERS ( TopCausas ) )
+
+// Quanto do DEC é responsabilidade de terceiros (furto, abalroamento, restrição de acesso)
+% DEC Causas Externas =
+DIVIDE (
+    CALCULATE ( [DEC (h)], dCausas[Responsabilidade] = "Externa" ),
+    [DEC (h)]
+)
+
+
+// ===================== 6. Expurgos e qualidade =====================
+
+// DEC "bruto": como seria sem retirar os dias críticos
+DEC Sem Expurgo (h) =
+SUMX (
+    VALUES ( dCalendario[AnoMes] ),
+    DIVIDE (
+        CALCULATE (
+            SUMX ( fInterrupcoes, fInterrupcoes[Clientes_Afetados] * fInterrupcoes[Duracao_min] / 60 ),
+            fInterrupcoes[Duracao_min] >= 3
+        ),
+        [Clientes Base (mês)]
+    )
+)
+
+Impacto dos Dias Críticos (h) =
+[DEC Sem Expurgo (h)] - [DEC (h)]
+
+Interrupções Curtas (< 3 min) =
+CALCULATE ( [Interrupções], fInterrupcoes[Duracao_min] < 3 )
+
+% DEC Programado =
+DIVIDE ( CALCULATE ( [DEC (h)], fInterrupcoes[Programada] = "S" ), [DEC (h)] )
+
+
+// ===================== 7. Textos dinâmicos =====================
+
+Título do Painel =
+"Continuidade do fornecimento — "
+    & SELECTEDVALUE ( dConjuntos[Regional], "todas as regionais" )
+    & " — "
+    & SELECTEDVALUE ( dCalendario[Ano], "todos os anos" )
+
+Resumo Executivo =
+VAR Acima = [Conjuntos Acima do Limite DEC]
+VAR Total = COUNTROWS ( VALUES ( dConjuntos[Conjunto_ID] ) )
+VAR Variacao = [Var DEC vs Ano Anterior %]
+RETURN
+    FORMAT ( Acima, "0" ) & " de " & FORMAT ( Total, "0" )
+        & " conjuntos estão acima do limite de DEC nos últimos 12 meses. "
+        & IF (
+            ISBLANK ( Variacao ),
+            "",
+            "O DEC " & IF ( Variacao < 0, "caiu ", "subiu " )
+                & FORMAT ( ABS ( Variacao ), "0.0%" ) & " em relação ao mesmo período do ano anterior."
+        )
