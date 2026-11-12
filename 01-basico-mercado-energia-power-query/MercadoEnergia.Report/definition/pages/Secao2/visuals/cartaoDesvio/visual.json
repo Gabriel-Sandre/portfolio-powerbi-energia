@@ -1,0 +1,36 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "cartaoDesvio",
+  "position": {
+    "x": 20,
+    "y": 480,
+    "z": 1500,
+    "height": 100,
+    "width": 180
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fMetas"
+                    }
+                  },
+                  "Property": "Desvio da Meta (GWh)"
+                }
+              },
+              "queryRef": "fMetas.Desvio da Meta (GWh)"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -1,0 +1,98 @@
+table fMetas
+	lineageTag: 8ce5dfac-11fe-5230-8f25-445c2ff5c896
+
+	measure 'Meta (GWh)' =
+			VAR UltimaDataComDados = CALCULATE ( MAX ( fFaturamento[Data] ), ALL ( fFaturamento ) )
+			RETURN
+			    CALCULATE ( SUM ( fMetas[Meta_GWh] ), KEEPFILTERS ( dCalendario[Data] <= UltimaDataComDados ) )
+		formatString: #,0.0
+		lineageTag: ac3fb403-a174-5e3b-9e9b-74a8b2751269
+
+	measure 'Meta Ano Completo (GWh)' = SUM ( fMetas[Meta_GWh] )
+		formatString: #,0.0
+		lineageTag: 41d6b7fd-e570-5fc9-baf4-e5a1b64e475c
+
+	measure '% Atingimento da Meta' = DIVIDE ( [Consumo (GWh)], [Meta (GWh)] )
+		formatString: 0.0%
+		lineageTag: bb27fd57-bf07-59ab-8929-b23c4de61a81
+
+	measure 'Desvio da Meta (GWh)' = [Consumo (GWh)] - [Meta (GWh)]
+		formatString: +#,0.0;-#,0.0;0
+		lineageTag: 27b6af87-73fa-511e-86ae-1ecfe291f147
+
+	measure 'Cor Atingimento' =
+			SWITCH (
+			    TRUE (),
+			    ISBLANK ( [% Atingimento da Meta] ), BLANK (),
+			    [% Atingimento da Meta] >= 1, "#2E7D32",
+			    [% Atingimento da Meta] >= 0.97, "#F9A825",
+			    "#C62828"
+			)
+		lineageTag: fc8dd8db-d71e-5af4-961e-18e3203a9017
+
+	column Data
+		dataType: dateTime
+		isHidden
+		formatString: dd/mm/yyyy
+		lineageTag: 00593646-6c8b-5757-938d-6e0742078968
+		summarizeBy: none
+		sourceColumn: Data
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Regional
+		dataType: string
+		isHidden
+		lineageTag: f0e461ba-72ec-56cb-8693-9809c037241f
+		summarizeBy: none
+		sourceColumn: Regional
+
+		annotation SummarizationSetBy = Automatic
+
+	column Meta_GWh
+		dataType: double
+		formatString: #,0.0
+		lineageTag: 04a8c2ca-5489-58ab-a1c4-b36ebc41a087
+		summarizeBy: sum
+		sourceColumn: Meta_GWh
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fMetas = m
+		mode: import
+		source =
+				// fMetas - metas de mercado. O Excel vem no formato "largo" (um mês por coluna + coluna Total),
+				// que é ótimo para ler e péssimo para analisar. Aqui ele é DESPIVOTADO para o formato "longo".
+				let
+				    Origem = Excel.Workbook(File.Contents(PastaDados & "\metas_regionais.xlsx"), null, true),
+				    Planilha = Origem{[Item = "Metas", Kind = "Sheet"]}[Data],
+				    CabecalhosPromovidos = Table.PromoteHeaders(Planilha, [PromoteAllScalars = true]),
+				
+				    // Se o Total não sair antes, ele vira um "mês" falso no despivotar e duplica a meta.
+				    SemTotal = Table.RemoveColumns(CabecalhosPromovidos, {"Total"}),
+				
+				    Despivotado = Table.UnpivotOtherColumns(SemTotal, {"Regional"}, "MesAno", "Meta_GWh"),
+				
+				    // "jan/25" -> 01/01/2025
+				    NomesMes = {"jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"},
+				    ColunaData = Table.AddColumn(
+				        Despivotado, "Data",
+				        each
+				            let
+				                Partes = Text.Split([MesAno], "/"),
+				                Mes = List.PositionOf(NomesMes, Text.Lower(Text.Trim(Partes{0}))) + 1,
+				                Ano = 2000 + Number.From(Partes{1})
+				            in
+				                #date(Ano, Mes, 1),
+				        type date
+				    ),
+				
+				    TiposAlterados = Table.TransformColumnTypes(ColunaData, {{"Regional", type text}, {"Meta_GWh", type number}}),
+				    Final = Table.SelectColumns(TiposAlterados, {"Data", "Regional", "Meta_GWh"})
+				in
+				    Final
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "cartaoFat",
+  "position": {
+    "x": 482,
+    "y": 75,
+    "z": 1600,
+    "height": 100,
+    "width": 250
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fFaturamento"
+                    }
+                  },
+                  "Property": "Faturamento (R$)"
+                }
+              },
+              "queryRef": "fFaturamento.Faturamento (R$)"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

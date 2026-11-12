@@ -30,10 +30,26 @@ O problema é que **ninguém confia na planilha**: cada mês vem com o mesmo mun
 | Metas por regional × faturamento por município | Dimensão `dRegional` derivada por **referência** |
 | Sem tabela de datas | Calendário gerado em M (`List.Dates`) |
 
+## Abrir o painel pronto
+
+1. Dê dois cliques em **`MercadoEnergia.pbip`** (Power BI Desktop recente).
+2. Se os cartões aparecerem "(Em branco)", clique em **Página Inicial > Atualizar**. O Power BI não versiona os dados, só o modelo e o relatório.
+3. Se os dados estiverem em outra pasta: **Transformar dados > Gerenciar parâmetros > PastaDados**.
+
+O painel tem 3 páginas: **Visão Geral**, **Meta x Realizado** e **Territórios**, com tema próprio (`TemaEnergiaRJ`).
+
+> O formato `.pbip` guarda o modelo (TMDL) e cada visual (JSON) em arquivos de texto, e por isso dá para ver no Git o que mudou. A primeira versão foi gerada por `criar_pbip.py`. Daqui para frente, edite direto no Power BI e salve: rodar o script de novo apaga o acabamento (ele pede `--forcar`).
+
+Se quiser **aprender montando do zero**, ignore o `.pbip` e siga o passo a passo abaixo num relatório em branco.
+
 ## Estrutura
 
 ```
 01-basico-mercado-energia-power-query/
+├── MercadoEnergia.pbip         # abre o painel pronto no Power BI Desktop
+├── MercadoEnergia.SemanticModel/   # modelo: consultas M, tabelas, relacionamentos, medidas (TMDL)
+├── MercadoEnergia.Report/      # relatório: páginas, visuais e tema (JSON)
+├── criar_pbip.py               # gerou a versão inicial do .pbip a partir de powerquery/ e dax/
 ├── gerar_dados.py              # recria os dados brutos (semente fixa)
 ├── dados/brutos/
 │   ├── faturamento/            # 22 CSVs mensais (jan/2025 a out/2026)
@@ -100,15 +116,15 @@ Crie uma tabela `_Medidas` (**Inserir dados > OK**) e cole as medidas de [`dax/m
 - Linhas: Consumo (GWh) por `Mes_Ano` (o pico de verão aparece sozinho).
 - Colunas empilhadas 100%: `% do Consumo Total` por `Regional` e `Classe`.
 
-**Página 2: Territórios**
-- Mapa (ou mapa coroplético) com `Localizacao` e o tamanho pelo Consumo.
-- Tabela: Município · Clientes · Consumo · Consumo Médio por Cliente · Tarifa Média.
-- Barras: Consumo por `Regional`.
+**Página 2: Meta × Realizado**
+- Colunas agrupadas: Consumo × Meta por `Mes_Ano` (meta em cinza).
+- Cartões: `% Atingimento da Meta` e `Desvio da Meta (GWh)`.
+- Tabela por Regional com `% Atingimento da Meta` colorido por `Cor Atingimento` (formatação condicional > valor do campo).
 
-**Página 3: Meta × Realizado**
-- Colunas agrupadas + linha: Consumo × Meta por `Mes_Ano`.
-- Matriz Regional × Mês com `% Atingimento da Meta` e cor da fonte por `Cor Atingimento`.
-- Cartão com o `Título Dinâmico`.
+**Página 3: Territórios**
+- Treemap: Consumo por `Municipio`, onde o peso da capital salta aos olhos.
+- Tabela-ranking: Município · Regional · Clientes · Consumo · Consumo Médio por Cliente · Tarifa Média.
+- Extra: um mapa (Azure Maps) com `Localizacao` e o tamanho pelo Consumo. Ele depende de habilitar os visuais de mapa nas opções de segurança do Power BI, por isso ficou de fora do `.pbip`.
 
 ## Perguntas que o painel responde
 

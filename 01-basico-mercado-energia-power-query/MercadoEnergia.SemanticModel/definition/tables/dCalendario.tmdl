@@ -1,0 +1,109 @@
+table dCalendario
+	lineageTag: d0142d49-f732-547d-be45-f75d6e8dbd46
+	dataCategory: Time
+
+	column Data
+		dataType: dateTime
+		isKey
+		formatString: dd/mm/yyyy
+		lineageTag: 3d74843b-b625-5703-bd20-cee05ba33621
+		summarizeBy: none
+		sourceColumn: Data
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Ano
+		dataType: int64
+		formatString: 0
+		lineageTag: b5eff026-1102-5fc9-a03a-cacee68e6b2c
+		summarizeBy: none
+		sourceColumn: Ano
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mes_Num
+		dataType: int64
+		isHidden
+		lineageTag: fb225bc4-9078-5c21-87f9-ef46a629d200
+		summarizeBy: none
+		sourceColumn: Mes_Num
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mes
+		dataType: string
+		lineageTag: 1d01ae6b-517d-5026-82c4-91323b2a3fb5
+		summarizeBy: none
+		sourceColumn: Mes
+		sortByColumn: Mes_Num
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mes_Ano
+		dataType: string
+		lineageTag: 0f728607-f976-5b59-9539-8bbc7e89d259
+		summarizeBy: none
+		sourceColumn: Mes_Ano
+		sortByColumn: AnoMes
+
+		annotation SummarizationSetBy = Automatic
+
+	column AnoMes
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 8082aa49-3b43-55d7-b2f9-a5ade331f6f7
+		summarizeBy: none
+		sourceColumn: AnoMes
+
+		annotation SummarizationSetBy = Automatic
+
+	column Trimestre
+		dataType: string
+		lineageTag: d654d0de-e247-5e2c-8cda-0dd564f0fbf5
+		summarizeBy: none
+		sourceColumn: Trimestre
+
+		annotation SummarizationSetBy = Automatic
+
+	column Periodo_Climatico
+		dataType: string
+		lineageTag: 976ed942-ef5a-554e-8e58-13fe73007cad
+		summarizeBy: none
+		sourceColumn: Periodo_Climatico
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dCalendario = m
+		mode: import
+		source =
+				// dCalendario - tabela de datas criada no próprio Power Query (sem depender de arquivo).
+				// Depois de carregar: Ferramentas de tabela > Marcar como tabela de datas > coluna Data.
+				// Classifique "Mes" e "Mes_Ano" pela coluna "AnoMes" (senão os meses saem em ordem alfabética).
+				let
+				    Inicio = #date(2025, 1, 1),
+				    Fim = #date(2026, 12, 31),
+				    ListaDatas = List.Dates(Inicio, Duration.Days(Fim - Inicio) + 1, #duration(1, 0, 0, 0)),
+				    Tabela = Table.FromList(ListaDatas, Splitter.SplitByNothing(), {"Data"}),
+				    TipoData = Table.TransformColumnTypes(Tabela, {{"Data", type date}}),
+				
+				    NomesMes = {"Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"},
+				
+				    Ano = Table.AddColumn(TipoData, "Ano", each Date.Year([Data]), Int64.Type),
+				    MesNum = Table.AddColumn(Ano, "Mes_Num", each Date.Month([Data]), Int64.Type),
+				    Mes = Table.AddColumn(MesNum, "Mes", each NomesMes{[Mes_Num] - 1}, type text),
+				    MesAno = Table.AddColumn(Mes, "Mes_Ano", each [Mes] & "/" & Text.End(Text.From([Ano]), 2), type text),
+				    AnoMes = Table.AddColumn(MesAno, "AnoMes", each [Ano] * 100 + [Mes_Num], Int64.Type),
+				    Trimestre = Table.AddColumn(AnoMes, "Trimestre", each "T" & Text.From(Date.QuarterOfYear([Data])), type text),
+				    Estacao = Table.AddColumn(
+				        Trimestre, "Periodo_Climatico",
+				        each if List.Contains({12, 1, 2, 3}, [Mes_Num]) then "Verão" else "Demais meses",
+				        type text
+				    )
+				in
+				    Estacao
+
+	annotation PBI_ResultType = Table
+

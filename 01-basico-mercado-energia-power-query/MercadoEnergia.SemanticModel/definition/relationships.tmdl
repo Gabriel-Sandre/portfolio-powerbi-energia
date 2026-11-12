@@ -1,0 +1,20 @@
+relationship ace52962-93dd-5bfa-a88c-6a99b64fa59c
+	fromColumn: fFaturamento.Cod_Municipio
+	toColumn: dMunicipios.Cod_Municipio
+
+relationship 0764a9fb-5b32-5e75-9f36-bac9a2e833c8
+	fromColumn: dMunicipios.Regional
+	toColumn: dRegional.Regional
+
+relationship 57fa0126-17f8-5721-80c7-f24a9aa50a9f
+	fromColumn: fMetas.Regional
+	toColumn: dRegional.Regional
+
+relationship 42d560f9-fc49-5e42-9eba-b3fa5c65b293
+	fromColumn: fFaturamento.Data
+	toColumn: dCalendario.Data
+
+relationship 67d48fa8-d25c-5072-9fa5-3cce522ac81f
+	fromColumn: fMetas.Data
+	toColumn: dCalendario.Data
+

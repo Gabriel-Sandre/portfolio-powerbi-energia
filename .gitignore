@@ -1,0 +1,5 @@
+# Arquivos locais do Power BI Desktop (cache de dados e configurações da máquina).
+# O projeto em si (TMDL do modelo + JSON do relatório) é versionado normalmente.
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+__pycache__/

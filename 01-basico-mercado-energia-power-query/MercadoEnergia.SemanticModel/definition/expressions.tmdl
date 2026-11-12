@@ -1,0 +1,24 @@
+expression PastaDados = "C:\Users\gabri\Downloads\formacao-infnet\powerbi-light\01-basico-mercado-energia-power-query\dados\brutos" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 3ba7178a-0754-5f89-bbf1-31297a16563d
+
+	annotation PBI_ResultType = Text
+
+expression DeParaClasses =
+		// DeParaClasses - tabela auxiliar de padronização (NÃO carregar no modelo:
+		// botão direito na consulta > desmarcar "Habilitar carga").
+		let
+		    Origem = Csv.Document(
+		        File.Contents(PastaDados & "\de_para_classes.csv"),
+		        [Delimiter = ";", Columns = 2, Encoding = 65001, QuoteStyle = QuoteStyle.None]
+		    ),
+		    CabecalhosPromovidos = Table.PromoteHeaders(Origem, [PromoteAllScalars = true]),
+		    TiposAlterados = Table.TransformColumnTypes(
+		        CabecalhosPromovidos,
+		        {{"Classe_Original", type text}, {"Classe_Padrao", type text}}
+		    )
+		in
+		    TiposAlterados
+	lineageTag: 4504e3bc-4be8-5342-8a6d-a2e0a8d01481
+
+	annotation PBI_ResultType = Table
+

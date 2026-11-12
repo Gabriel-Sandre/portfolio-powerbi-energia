@@ -1,0 +1,36 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "cartaoAting",
+  "position": {
+    "x": 20,
+    "y": 370,
+    "z": 1400,
+    "height": 100,
+    "width": 180
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fMetas"
+                    }
+                  },
+                  "Property": "% Atingimento da Meta"
+                }
+              },
+              "queryRef": "fMetas.% Atingimento da Meta"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

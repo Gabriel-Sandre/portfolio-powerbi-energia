@@ -1,0 +1,87 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 419.49547380790364,
+            "y": 474.3267346693699
+          },
+          "nodeIndex": "dCalendario",
+          "nodeLineageTag": "d0142d49-f732-547d-be45-f75d6e8dbd46",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 133.56676252870921,
+            "y": -50
+          },
+          "nodeIndex": "dMunicipios",
+          "nodeLineageTag": "6a7a6fa2-2149-524c-a710-ae4e34dd0652",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 419.58197882430943,
+            "y": 97.801267399447056
+          },
+          "nodeIndex": "dRegional",
+          "nodeLineageTag": "27764236-d504-539f-aedf-64a9a4bb5aa4",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 50,
+            "y": 203.20004885569836
+          },
+          "nodeIndex": "fFaturamento",
+          "nodeLineageTag": "71ab7d06-f9cd-5a4f-928a-c2421abe0626",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 706.50169399023571,
+            "y": 241.27962853546
+          },
+          "nodeIndex": "fMetas",
+          "nodeLineageTag": "8ce5dfac-11fe-5230-8f25-445c2ff5c896",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "Todas as tabelas",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "Todas as tabelas",
+  "defaultDiagram": "Todas as tabelas"
+}

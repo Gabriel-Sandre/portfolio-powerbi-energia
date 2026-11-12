@@ -1,0 +1,68 @@
+table dMunicipios
+	lineageTag: 6a7a6fa2-2149-524c-a710-ae4e34dd0652
+
+	column Cod_Municipio
+		dataType: string
+		isHidden
+		lineageTag: 46a3fca0-7235-535c-8a14-66a17daa602d
+		summarizeBy: none
+		sourceColumn: Cod_Municipio
+
+		annotation SummarizationSetBy = Automatic
+
+	column Municipio
+		dataType: string
+		lineageTag: daf7894b-11dc-5fae-86b0-64571d5bbf17
+		summarizeBy: none
+		sourceColumn: Municipio
+
+		annotation SummarizationSetBy = Automatic
+
+	column Regional
+		dataType: string
+		isHidden
+		lineageTag: a5169294-0509-5482-afab-99715c5a7b26
+		summarizeBy: none
+		sourceColumn: Regional
+
+		annotation SummarizationSetBy = Automatic
+
+	column UF
+		dataType: string
+		lineageTag: dba0e036-ef50-5677-a70b-16cd7f83247f
+		summarizeBy: none
+		sourceColumn: UF
+
+		annotation SummarizationSetBy = Automatic
+
+	column Localizacao
+		dataType: string
+		lineageTag: e7557d47-1940-5f73-8a52-b5be7820c049
+		dataCategory: Place
+		summarizeBy: none
+		sourceColumn: Localizacao
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dMunicipios = m
+		mode: import
+		source =
+				// dMunicipios - dimensão de municípios (lida do Excel).
+				let
+				    Origem = Excel.Workbook(File.Contents(PastaDados & "\municipios.xlsx"), null, true),
+				    Planilha = Origem{[Item = "Municipios", Kind = "Sheet"]}[Data],
+				    CabecalhosPromovidos = Table.PromoteHeaders(Planilha, [PromoteAllScalars = true]),
+				    TiposAlterados = Table.TransformColumnTypes(
+				        CabecalhosPromovidos,
+				        {{"Cod_Municipio", type text}, {"Municipio", type text}, {"Regional", type text}, {"UF", type text}}
+				    ),
+				    // Texto completo ajuda o mapa do Power BI a não confundir "Rio Claro (RJ)" com "Rio Claro (SP)".
+				    // Em Modelagem, defina a Categoria de Dados desta coluna como "Local".
+				    ColunaLocalizacao = Table.AddColumn(
+				        TiposAlterados, "Localizacao", each [Municipio] & ", " & [UF] & ", Brasil", type text
+				    )
+				in
+				    ColunaLocalizacao
+
+	annotation PBI_ResultType = Table
+

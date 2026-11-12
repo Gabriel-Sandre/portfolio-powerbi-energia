@@ -1,0 +1,144 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "tabelaRegional",
+  "position": {
+    "x": 220,
+    "y": 387,
+    "z": 1700,
+    "height": 313,
+    "width": 1040
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dRegional"
+                    }
+                  },
+                  "Property": "Regional"
+                }
+              },
+              "queryRef": "dRegional.Regional"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fFaturamento"
+                    }
+                  },
+                  "Property": "Consumo (GWh)"
+                }
+              },
+              "queryRef": "fFaturamento.Consumo (GWh)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fMetas"
+                    }
+                  },
+                  "Property": "Meta (GWh)"
+                }
+              },
+              "queryRef": "fMetas.Meta (GWh)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fMetas"
+                    }
+                  },
+                  "Property": "Desvio da Meta (GWh)"
+                }
+              },
+              "queryRef": "fMetas.Desvio da Meta (GWh)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fMetas"
+                    }
+                  },
+                  "Property": "% Atingimento da Meta"
+                }
+              },
+              "queryRef": "fMetas.% Atingimento da Meta"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "values": [
+        {
+          "properties": {
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "fMetas"
+                        }
+                      },
+                      "Property": "Cor Atingimento"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ],
+            "metadata": "fMetas.% Atingimento da Meta"
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Atingimento por regional (verde: bateu a meta · amarelo: acima de 97% · vermelho: abaixo)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

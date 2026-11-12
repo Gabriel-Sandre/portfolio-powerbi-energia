@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "MercadoEnergia"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "d6d64122-ee80-4827-9e6e-fff461fa6d8f"
+  }
+}

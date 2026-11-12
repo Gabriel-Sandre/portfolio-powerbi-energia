@@ -1,0 +1,164 @@
+table fFaturamento
+	lineageTag: 71ab7d06-f9cd-5a4f-928a-c2421abe0626
+
+	measure 'Consumo (GWh)' = DIVIDE ( SUM ( fFaturamento[Consumo_kWh] ), 1000000 )
+		formatString: #,0.0
+		lineageTag: 0467ddc8-031f-5761-a450-66a0a5a678f1
+
+	measure 'Faturamento (R$)' = SUM ( fFaturamento[Valor_Faturado] )
+		formatString: R$ #,0
+		lineageTag: 43b36ba9-98ba-5fb0-986b-2171f15edcef
+
+	measure 'Tarifa Média (R$/kWh)' = DIVIDE ( [Faturamento (R$)], SUM ( fFaturamento[Consumo_kWh] ) )
+		formatString: R$ #,0.000
+		lineageTag: 9f9e8e6f-7d02-570a-951e-74ec36e24791
+
+	measure Clientes =
+			VAR UltimaData = MAX ( fFaturamento[Data] )
+			RETURN
+			    CALCULATE ( SUM ( fFaturamento[Qtd_Clientes] ), fFaturamento[Data] = UltimaData )
+		formatString: #,0
+		lineageTag: 36896deb-0fd7-51d3-b007-edf6343c4a67
+
+	measure 'Consumo Médio por Cliente (kWh/mês)' = DIVIDE ( SUM ( fFaturamento[Consumo_kWh] ), SUM ( fFaturamento[Qtd_Clientes] ) )
+		formatString: #,0.0
+		lineageTag: aa09b8c8-907b-5ac7-a979-83a1ad803a39
+
+	measure '% do Consumo Total' = DIVIDE ( [Consumo (GWh)], CALCULATE ( [Consumo (GWh)], ALLSELECTED ( fFaturamento[Classe] ) ) )
+		formatString: 0.0%
+		lineageTag: ab4a02cc-405c-5fab-aeff-8d685dd832de
+
+	measure 'Título Dinâmico' = "Mercado de energia — " & SELECTEDVALUE ( dRegional[Regional], "todas as regionais" )
+		lineageTag: f55063e5-8005-5fc7-a518-f87df532b72e
+
+	column Data
+		dataType: dateTime
+		isHidden
+		formatString: dd/mm/yyyy
+		lineageTag: bac8ebb7-0436-55bc-8f46-7d07c69acbef
+		summarizeBy: none
+		sourceColumn: Data
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Cod_Municipio
+		dataType: string
+		isHidden
+		lineageTag: 12c0656b-c086-5a5b-bc59-5767930e57eb
+		summarizeBy: none
+		sourceColumn: Cod_Municipio
+
+		annotation SummarizationSetBy = Automatic
+
+	column Classe
+		dataType: string
+		lineageTag: a0235ea3-424d-54f4-b2e7-5bcd9053f336
+		summarizeBy: none
+		sourceColumn: Classe
+
+		annotation SummarizationSetBy = Automatic
+
+	column Qtd_Clientes
+		dataType: int64
+		formatString: #,0
+		lineageTag: 76bc1876-7a7f-5065-8d25-984549f2afac
+		summarizeBy: sum
+		sourceColumn: Qtd_Clientes
+
+		annotation SummarizationSetBy = Automatic
+
+	column Consumo_kWh
+		dataType: double
+		formatString: #,0
+		lineageTag: 89d2c67e-fd81-5257-8111-3d03d7e2a8f6
+		summarizeBy: sum
+		sourceColumn: Consumo_kWh
+
+		annotation SummarizationSetBy = Automatic
+
+	column Valor_Faturado
+		dataType: decimal
+		formatString: R$ #,0.00
+		lineageTag: a2c23104-24bb-5ce6-a5e5-4687188ff397
+		summarizeBy: sum
+		sourceColumn: Valor_Faturado
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fFaturamento = m
+		mode: import
+		source =
+				// fFaturamento - tabela fato. Junta os 22 CSVs mensais e trata os problemas do sistema de origem:
+				//   1. 2 linhas de "relatório" antes do cabeçalho          -> Table.Skip
+				//   2. linha "TOTAL GERAL" no fim de cada arquivo           -> filtro de linhas
+				//   3. códigos de município com espaço e minúsculas         -> Aparar + Maiúsculas
+				//   4. nome do município escrito de 5 jeitos diferentes     -> descartado; o nome oficial vem de dMunicipios
+				//   5. classe escrita de 15 jeitos ("RES", "Res.", ...)     -> Mesclar com a tabela DeParaClasses
+				//   6. números em pt-BR ("1.234.567,89") e "R$ " no valor   -> Substituir + Alterar tipo usando localidade
+				//   7. competência como texto "01/2025"                     -> coluna Data (1º dia do mês)
+				//   8. linhas exportadas em duplicidade                     -> Remover duplicatas
+				let
+				    Origem = Folder.Files(PastaDados & "\faturamento"),
+				    ApenasCsv = Table.SelectRows(Origem, each Text.Lower([Extension]) = ".csv"),
+				
+				    // Lê cada arquivo: pula as 2 linhas de cabeçalho do relatório e promove a 3ª linha a cabeçalho.
+				    ArquivosLidos = Table.AddColumn(
+				        ApenasCsv, "Tabela",
+				        each Table.PromoteHeaders(
+				            Table.Skip(
+				                Csv.Document([Content], [Delimiter = ";", Columns = 7, Encoding = 65001, QuoteStyle = QuoteStyle.None]),
+				                2
+				            ),
+				            [PromoteAllScalars = true]
+				        )
+				    ),
+				    Combinado = Table.Combine(ArquivosLidos[Tabela]),
+				
+				    SemTotais = Table.SelectRows(
+				        Combinado,
+				        each [Competencia] <> null and [Competencia] <> "" and not Text.StartsWith(Text.Upper([Competencia]), "TOTAL")
+				    ),
+				
+				    TextosPadronizados = Table.TransformColumns(
+				        SemTotais,
+				        {
+				            {"Competencia", Text.Trim, type text},
+				            {"Cod_Municipio", each Text.Upper(Text.Trim(_)), type text},
+				            {"Classe", each Text.Upper(Text.Trim(_)), type text},
+				            {"Valor_Faturado", each Text.Trim(Text.Replace(_, "R$", "")), type text}
+				        }
+				    ),
+				
+				    // O 3º argumento "pt-BR" é o que faz "1.234,56" virar 1234,56 (e não 123456 ou erro).
+				    TiposAlterados = Table.TransformColumnTypes(
+				        TextosPadronizados,
+				        {{"Qtd_Clientes", Int64.Type}, {"Consumo_kWh", type number}, {"Valor_Faturado", Currency.Type}},
+				        "pt-BR"
+				    ),
+				
+				    ColunaData = Table.AddColumn(
+				        TiposAlterados, "Data",
+				        each #date(Number.From(Text.End([Competencia], 4)), Number.From(Text.Start([Competencia], 2)), 1),
+				        type date
+				    ),
+				
+				    MesclarDePara = Table.NestedJoin(ColunaData, {"Classe"}, DeParaClasses, {"Classe_Original"}, "DePara", JoinKind.LeftOuter),
+				    ExpandirDePara = Table.ExpandTableColumn(MesclarDePara, "DePara", {"Classe_Padrao"}),
+				
+				    ColunasBrutasRemovidas = Table.RemoveColumns(ExpandirDePara, {"Competencia", "Municipio", "Classe"}),
+				    Renomeado = Table.RenameColumns(ColunasBrutasRemovidas, {{"Classe_Padrao", "Classe"}}),
+				
+				    // Só agora (com tudo padronizado) as duplicatas ficam idênticas e podem ser removidas.
+				    SemDuplicatas = Table.Distinct(Renomeado),
+				
+				    Final = Table.SelectColumns(
+				        SemDuplicatas,
+				        {"Data", "Cod_Municipio", "Classe", "Qtd_Clientes", "Consumo_kWh", "Valor_Faturado"}
+				    )
+				in
+				    Final
+
+	annotation PBI_ResultType = Table
+
