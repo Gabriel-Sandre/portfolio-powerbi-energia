@@ -1,4 +1,4 @@
-expression PastaDados = "C:\Users\gabri\Downloads\formacao-infnet\powerbi-light\01-basico-mercado-energia-power-query\dados\brutos" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+expression PastaDados = "C:\Users\gabri\Downloads\portfolio-powerbi-energia\01-basico-mercado-energia-power-query\dados\brutos" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
 	lineageTag: 3ba7178a-0754-5f89-bbf1-31297a16563d
 
 	annotation PBI_ResultType = Text

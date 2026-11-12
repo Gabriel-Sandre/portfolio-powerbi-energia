@@ -209,11 +209,11 @@ Crie `dCalendario` e as medidas de [`powerbi/medidas.dax`](powerbi/medidas.dax),
 - Barras: `Rejeicoes[Linhas]` por `Motivo`.
 - Linha: `% Rejeição` por execução.
 
-## Como apresentar
+## Resumo
 
 > "Montei um pipeline em Python que todo dia pega os arquivos do sistema comercial, valida linha a linha, carrega num SQL Server com MERGE e calcula um score de risco de perda não técnica com funções de janela. No backtest com inspeções aleatórias, os clientes que o score marcava como alto risco tinham taxa de irregularidade muito maior que a média. Ou seja: com as mesmas equipes, daria para encontrar várias vezes mais irregularidades. O painel tem uma página só para monitorar se o próprio pipeline está saudável."
 
-Perguntas que costumam vir, e as respostas:
+### Decisões de projeto
 - *Por que não machine learning?* Explicabilidade, e ainda não há rótulos suficientes. O backtest já está pronto para comparar com um modelo depois.
 - *Como evita que o score "cole" do resultado?* O backtest usa o score do **mês anterior** à inspeção.
 - *E se o arquivo chegar duas vezes?* MERGE: reprocessar não duplica.

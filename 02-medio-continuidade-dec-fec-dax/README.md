@@ -122,6 +122,6 @@ Se `Var DEC vs Ano Anterior %` em 2026 der **−26%** em vez de **−6,9%**, voc
 3. O verão (dez–mar) concentra quanto do DEC anual? Quais causas puxam esse pico?
 4. A melhora de 2026 é geral ou concentrada em algumas regionais?
 
-## Como apresentar
+## Resumo
 
 > "Modelei os indicadores de continuidade como a regra regulatória pede: cálculo mensal, interrupções acima de 3 minutos e expurgo de dias críticos. A parte difícil do DAX foi o denominador: o DEC por causa precisa manter o total de clientes do conjunto, e a comparação com o ano anterior precisa ignorar os meses que ainda não aconteceram. Deixei uma tabela de conferência que bate com um cálculo independente em Python."

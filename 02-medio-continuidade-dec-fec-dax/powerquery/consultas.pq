@@ -7,7 +7,7 @@
 // =====================================================================
 
 // Consulta: PastaDados  (parâmetro - ajuste o caminho)
-"C:\Users\gabri\Downloads\formacao-infnet\powerbi-light\02-medio-continuidade-dec-fec-dax\dados"
+"C:\Users\gabri\Downloads\portfolio-powerbi-energia\02-medio-continuidade-dec-fec-dax\dados"
     meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
 
 

@@ -85,7 +85,7 @@ Para cada arquivo da pasta `powerquery/`, na ordem: **Nova Fonte > Consulta Nula
 6. `fMetas`
 7. `dCalendario`
 
-> **Dica de entrevista:** depois de colar, clique em cada etapa em "Etapas Aplicadas" e veja os dados mudando. Você precisa saber explicar *por que* cada etapa existe (está comentado no código).
+> Clique em cada etapa em "Etapas Aplicadas" para ver os dados mudando. O *porquê* de cada etapa está comentado no código.
 
 **Conferência:** `fFaturamento` deve ter **3.124 linhas** e nenhuma `Classe` nula. Se aparecer nula, uma variação nova de classe não está no de-para. Esse é justamente o tipo de alerta que vale mostrar.
 
@@ -140,10 +140,10 @@ Crie uma tabela `_Medidas` (**Inserir dados > OK**) e cole as medidas de [`dax/m
 1. Quanto o verão aumenta o consumo residencial em relação ao inverno?
 2. O reajuste tarifário de mar/2026 aparece na tarifa média? De quanto foi?
 3. Qual regional está mais abaixo da meta no ano e em quais meses?
-4. Por que o Sul Fluminense tem consumo médio por cliente maior? (Dica: classe industrial.)
+4. Por que o Sul Fluminense tem consumo médio por cliente maior?
 
-## Como apresentar
+## Resumo
 
 > "Peguei 22 exportações mensais com cabeçalho de relatório, totais embutidos, duplicatas e 15 grafias diferentes para 5 classes de consumo, e montei no Power Query um processo que roda sozinho quando chega o arquivo do mês seguinte. É só jogar o CSV na pasta e atualizar."
 
-Para provar o "roda sozinho": apague `faturamento_2026-10.csv`, atualize (o painel vai até setembro), devolva o arquivo e atualize de novo.
+**Teste do processo automático:** apague `faturamento_2026-10.csv`, atualize (o painel vai até setembro), devolva o arquivo e atualize de novo.
