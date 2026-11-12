@@ -8,6 +8,9 @@ Três projetos com tema de **distribuidora de energia no Rio de Janeiro**, em or
 | 2 | [Qualidade do Fornecimento: DEC e FEC](02-medio-continuidade-dec-fec-dax/) | Intermediário | **DAX** | Quais conjuntos estouram os limites da ANEEL e por quê? |
 | 3 | [Radar de Perdas Não Técnicas](03-avancado-radar-perdas-python-sql/) | Avançado | **Python + SQL Server + Power BI** | Onde está a energia que entra na rede e não é faturada, e quem inspecionar primeiro? |
 
+[![Projeto 1: painel de mercado de energia](01-basico-mercado-energia-power-query/imagens/01-visao-geral.png)](01-basico-mercado-energia-power-query/)
+<sub>Projeto 1 pronto (abra o `MercadoEnergia.pbip` no Power BI Desktop). Os projetos 2 e 3 estão em construção.</sub>
+
 Os três temas são escolhidos a dedo: **mercado e faturamento**, **continuidade do fornecimento (DEC/FEC)** e **perdas não técnicas** estão entre os assuntos centrais de qualquer distribuidora regulada pela ANEEL. Na área de concessão do Rio, perdas e restrição de acesso a áreas de risco têm peso especial.
 
 > **Aviso:** todos os dados são **simulados** por scripts Python com semente fixa (reprodutíveis). Nomes de bairros e municípios dão contexto realista, mas nenhum número representa uma empresa real. Projeto independente, sem vínculo com nenhuma distribuidora. Não use logotipos ou identidade visual de empresas reais nos painéis.

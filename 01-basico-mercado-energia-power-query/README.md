@@ -4,6 +4,15 @@
 
 *Dados 100% simulados. Projeto de portfólio independente, sem vínculo com nenhuma empresa.*
 
+![Visão Geral: consumo, faturamento, clientes e tarifa média, com o pico de verão no consumo mensal](imagens/01-visao-geral.png)
+
+<table>
+<tr>
+<td width="50%"><img src="imagens/02-meta-x-realizado.png" alt="Meta x Realizado por mês e por regional, com cor condicional no atingimento"><br><sub><b>Meta x Realizado</b>: meta em cinza e atingimento colorido por regional</sub></td>
+<td width="50%"><img src="imagens/03-territorios.png" alt="Treemap de consumo por município e ranking de municípios"><br><sub><b>Territórios</b>: peso de cada município e ranking com consumo médio e tarifa</sub></td>
+</tr>
+</table>
+
 ## O problema de negócio
 
 Uma distribuidora do Rio de Janeiro atende capital, Baixada Fluminense, Sul e Centro-Sul Fluminense. Todo mês o sistema comercial exporta um CSV de faturamento por município e classe de consumo. A área de Planejamento de Mercado precisa saber:

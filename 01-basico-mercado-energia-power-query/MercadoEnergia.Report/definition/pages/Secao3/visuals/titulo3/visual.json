@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "titulo3",
   "position": {
-    "x": 20,
-    "y": 8,
+    "x": 16,
+    "y": 4,
     "z": 0,
-    "height": 58,
-    "width": 900
+    "height": 68,
+    "width": 1248
   },
   "visual": {
     "visualType": "textbox",
@@ -20,7 +20,7 @@
                   {
                     "value": "Mercado de Energia · Área de Concessão",
                     "textStyle": {
-                      "fontSize": "18pt",
+                      "fontSize": "16pt",
                       "color": "#1F4E79",
                       "fontWeight": "bold"
                     }
@@ -30,9 +30,9 @@
               {
                 "textRuns": [
                   {
-                    "value": "Onde está o mercado: consumo e perfil por município",
+                    "value": "Onde está o mercado: consumo e perfil por município · dados simulados, projeto de portfólio",
                     "textStyle": {
-                      "fontSize": "10pt",
+                      "fontSize": "9pt",
                       "color": "#5F6B7A"
                     }
                   }
