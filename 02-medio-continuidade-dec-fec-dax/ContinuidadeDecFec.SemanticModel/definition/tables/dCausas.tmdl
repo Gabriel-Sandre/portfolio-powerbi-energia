@@ -1,0 +1,48 @@
+table dCausas
+	lineageTag: ae381e5b-8653-55e2-b1dd-13bfc4f7b64a
+
+	column Causa_ID
+		dataType: int64
+		isHidden
+		lineageTag: d7a69e3e-c1a0-54f1-a5fe-1b96a7fd0f99
+		summarizeBy: none
+		sourceColumn: Causa_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Causa
+		dataType: string
+		lineageTag: ec0b0b62-33ab-5b8b-a207-9860fd550000
+		summarizeBy: none
+		sourceColumn: Causa
+
+		annotation SummarizationSetBy = Automatic
+
+	column Grupo
+		dataType: string
+		lineageTag: bc56e9af-6877-5d52-95e7-50370c90c213
+		summarizeBy: none
+		sourceColumn: Grupo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Responsabilidade
+		dataType: string
+		lineageTag: bab1cba7-67ce-5df0-8ae5-a753b75f1c89
+		summarizeBy: none
+		sourceColumn: Responsabilidade
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dCausas = m
+		mode: import
+		source =
+				let
+				    Origem = Csv.Document(File.Contents(PastaDados & "\dCausas.csv"), [Delimiter = ";", Encoding = 65001, QuoteStyle = QuoteStyle.None]),
+				    Cabecalhos = Table.PromoteHeaders(Origem, [PromoteAllScalars = true]),
+				    Tipos = Table.TransformColumnTypes(Cabecalhos, {
+				        {"Causa_ID", Int64.Type}, {"Causa", type text}, {"Grupo", type text}, {"Responsabilidade", type text}}, "pt-BR")
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table

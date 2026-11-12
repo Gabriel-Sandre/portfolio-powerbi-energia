@@ -1,0 +1,167 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "tabelaEventos",
+  "position": {
+    "x": 220,
+    "y": 192,
+    "z": 1800,
+    "height": 508,
+    "width": 1040
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fInterrupcoes"
+                    }
+                  },
+                  "Property": "Interrupcao_ID"
+                }
+              },
+              "queryRef": "fInterrupcoes.Interrupcao_ID"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fInterrupcoes"
+                    }
+                  },
+                  "Property": "Data_Hora_Inicio"
+                }
+              },
+              "queryRef": "fInterrupcoes.Data_Hora_Inicio"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dConjuntos"
+                    }
+                  },
+                  "Property": "Conjunto"
+                }
+              },
+              "queryRef": "dConjuntos.Conjunto"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fInterrupcoes"
+                    }
+                  },
+                  "Property": "Alimentador"
+                }
+              },
+              "queryRef": "fInterrupcoes.Alimentador"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dCausas"
+                    }
+                  },
+                  "Property": "Causa"
+                }
+              },
+              "queryRef": "dCausas.Causa"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fInterrupcoes"
+                    }
+                  },
+                  "Property": "Duracao_min"
+                }
+              },
+              "queryRef": "fInterrupcoes.Duracao_min"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fInterrupcoes"
+                    }
+                  },
+                  "Property": "Clientes_Afetados"
+                }
+              },
+              "queryRef": "fInterrupcoes.Clientes_Afetados"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fInterrupcoes"
+                    }
+                  },
+                  "Property": "Expurgavel"
+                }
+              },
+              "queryRef": "fInterrupcoes.Expurgavel"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "fInterrupcoes"
+                  }
+                },
+                "Property": "Clientes_Afetados"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Interrupções (maiores em clientes afetados primeiro)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -19,7 +19,9 @@ let
         {"Conjunto_ID", type text}, {"Conjunto", type text}, {"Municipio", type text}, {"Regional", type text},
         {"Perfil", type text}, {"Clientes_Ref", Int64.Type},
         {"Limite_DEC_Anual", type number}, {"Limite_FEC_Anual", type number}}, "pt-BR"),
-    Localizacao = Table.AddColumn(Tipos, "Localizacao", each [Municipio] & ", RJ, Brasil", type text)
+    // o arquivo traz "urbano", "periferia", "interior": deixa com inicial maiúscula para os visuais
+    PerfilFormatado = Table.TransformColumns(Tipos, {{"Perfil", Text.Proper, type text}}),
+    Localizacao = Table.AddColumn(PerfilFormatado, "Localizacao", each [Municipio] & ", RJ, Brasil", type text)
 in
     Localizacao
 

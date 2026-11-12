@@ -1,0 +1,131 @@
+table FilaInspecao
+	lineageTag: 979e85aa-70f5-5c81-9e94-a9cdc563b91b
+
+	column Cliente_ID
+		dataType: int64
+		formatString: 0
+		lineageTag: 9bad6eec-0689-580a-8d5e-f9d72fd33a86
+		summarizeBy: none
+		sourceColumn: Cliente_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Competencia
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		lineageTag: 3e29f393-3c48-5d2a-b660-c8ca30d2af7e
+		summarizeBy: none
+		sourceColumn: Competencia
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Score
+		dataType: double
+		formatString: 0.0
+		lineageTag: 5e2701ed-33b7-57b4-96ea-9917fea0ec22
+		summarizeBy: none
+		sourceColumn: Score
+
+		annotation SummarizationSetBy = Automatic
+
+	column Faixa
+		dataType: string
+		lineageTag: 9f98165c-54c0-592a-90e8-4c44f219196d
+		summarizeBy: none
+		sourceColumn: Faixa
+
+		annotation SummarizationSetBy = Automatic
+
+	column Motivo_Principal
+		dataType: string
+		lineageTag: 26b65131-5bcb-50c6-93ae-63debdaca3cb
+		summarizeBy: none
+		sourceColumn: Motivo_Principal
+
+		annotation SummarizationSetBy = Automatic
+
+	column Classe
+		dataType: string
+		lineageTag: c6ad417b-0792-562c-890d-29e0c83a697d
+		summarizeBy: none
+		sourceColumn: Classe
+
+		annotation SummarizationSetBy = Automatic
+
+	column Tipo_Medidor
+		dataType: string
+		lineageTag: 7f122eee-ca1b-57a6-a168-045df33745de
+		summarizeBy: none
+		sourceColumn: Tipo_Medidor
+
+		annotation SummarizationSetBy = Automatic
+
+	column Alimentador_ID
+		dataType: string
+		lineageTag: 33b9b658-5405-5d68-95b1-d49d14e2d76e
+		summarizeBy: none
+		sourceColumn: Alimentador_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Subestacao
+		dataType: string
+		lineageTag: 0a88a9bf-5f99-5f4f-841e-0c16b4cdb03c
+		summarizeBy: none
+		sourceColumn: Subestacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column Municipio
+		dataType: string
+		lineageTag: 0949b838-aa4c-55c9-9f54-dead0b5890b0
+		summarizeBy: none
+		sourceColumn: Municipio
+
+		annotation SummarizationSetBy = Automatic
+
+	column Regional
+		dataType: string
+		lineageTag: fb03f716-a394-5e8f-a767-49e3197936ca
+		summarizeBy: none
+		sourceColumn: Regional
+
+		annotation SummarizationSetBy = Automatic
+
+	column Area_Risco
+		dataType: string
+		lineageTag: e00028c4-4387-581e-866c-cb5859ca6f4c
+		summarizeBy: none
+		sourceColumn: Area_Risco
+
+		annotation SummarizationSetBy = Automatic
+
+	column Prioridade
+		dataType: int64
+		formatString: 0
+		lineageTag: c1db02f2-0bc6-57b3-a2a4-17ca27b4e18d
+		summarizeBy: none
+		sourceColumn: Prioridade
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FilaInspecao = m
+		mode: import
+		source =
+				let
+				    Fonte = Sql.Database(Servidor, Banco),
+				    Dados = Fonte{[Schema = "dw", Item = "vw_fila_inspecao"]}[Data],
+				    AreaTexto = Table.TransformColumns(Dados, {{"Area_Risco", each if _ then "Área de risco" else "Área regular", type text}}),
+				    Tipos = Table.TransformColumnTypes(AreaTexto, {
+				        {"Cliente_ID", Int64.Type}, {"Competencia", type date}, {"Score", type number}, {"Faixa", type text},
+				        {"Motivo_Principal", type text}, {"Classe", type text}, {"Tipo_Medidor", type text},
+				        {"Alimentador_ID", type text}, {"Subestacao", type text}, {"Municipio", type text},
+				        {"Regional", type text}, {"Prioridade", Int64.Type}})
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table
+

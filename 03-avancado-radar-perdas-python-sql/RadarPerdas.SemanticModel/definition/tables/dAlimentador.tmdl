@@ -1,0 +1,69 @@
+table dAlimentador
+	lineageTag: 8e31a5aa-3b15-5a21-aa9d-529d8c0da02c
+
+	column Alimentador_ID
+		dataType: string
+		lineageTag: 25e1a45d-68b3-5a1b-b16b-ed3b12c4d980
+		summarizeBy: none
+		sourceColumn: Alimentador_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Subestacao
+		dataType: string
+		lineageTag: 992c7fba-3fe4-5fec-9d64-7b489baa23ba
+		summarizeBy: none
+		sourceColumn: Subestacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column Municipio
+		dataType: string
+		lineageTag: 0ff47ce6-8651-51a0-87f6-e92968aeb560
+		summarizeBy: none
+		sourceColumn: Municipio
+
+		annotation SummarizationSetBy = Automatic
+
+	column Regional
+		dataType: string
+		lineageTag: dc17484c-e542-556f-b239-53a935e831e9
+		summarizeBy: none
+		sourceColumn: Regional
+
+		annotation SummarizationSetBy = Automatic
+
+	column Area_Risco
+		dataType: string
+		lineageTag: 1ddbbe55-661d-5302-b00c-6b39e112179a
+		summarizeBy: none
+		sourceColumn: Area_Risco
+
+		annotation SummarizationSetBy = Automatic
+
+	column Perda_Tecnica_Pct
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 6906d5fd-ff92-56b3-8d89-79b6eb8431c8
+		summarizeBy: none
+		sourceColumn: Perda_Tecnica_Pct
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dAlimentador = m
+		mode: import
+		source =
+				let
+				    Fonte = Sql.Database(Servidor, Banco),
+				    Dados = Fonte{[Schema = "dw", Item = "dAlimentador"]}[Data],
+				    Colunas = Table.SelectColumns(Dados, {"Alimentador_ID", "Subestacao", "Municipio", "Regional", "Area_Risco", "Perda_Tecnica_Pct"}),
+				    // BIT do SQL vira verdadeiro/falso; para o usuário, um texto claro
+				    AreaTexto = Table.TransformColumns(Colunas, {{"Area_Risco", each if _ then "Área de risco" else "Área regular", type text}}),
+				    Tipos = Table.TransformColumnTypes(AreaTexto, {
+				        {"Alimentador_ID", type text}, {"Subestacao", type text}, {"Municipio", type text},
+				        {"Regional", type text}, {"Perda_Tecnica_Pct", type number}})
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table
+

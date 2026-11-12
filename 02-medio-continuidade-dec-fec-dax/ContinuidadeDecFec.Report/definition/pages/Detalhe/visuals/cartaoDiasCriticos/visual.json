@@ -1,0 +1,36 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "cartaoDiasCriticos",
+  "position": {
+    "x": 744,
+    "y": 80,
+    "z": 1600,
+    "height": 100,
+    "width": 250
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fInterrupcoes"
+                    }
+                  },
+                  "Property": "Impacto dos Dias Críticos (h)"
+                }
+              },
+              "queryRef": "fInterrupcoes.Impacto dos Dias Críticos (h)"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

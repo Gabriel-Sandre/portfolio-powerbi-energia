@@ -1,0 +1,167 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "tabelaExecucoes",
+  "position": {
+    "x": 20,
+    "y": 192,
+    "z": 1500,
+    "height": 230,
+    "width": 840
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "LogExecucao"
+                    }
+                  },
+                  "Property": "Execucao_ID"
+                }
+              },
+              "queryRef": "LogExecucao.Execucao_ID"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "LogExecucao"
+                    }
+                  },
+                  "Property": "Inicio"
+                }
+              },
+              "queryRef": "LogExecucao.Inicio"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "LogExecucao"
+                    }
+                  },
+                  "Property": "Fim"
+                }
+              },
+              "queryRef": "LogExecucao.Fim"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "LogExecucao"
+                    }
+                  },
+                  "Property": "Status"
+                }
+              },
+              "queryRef": "LogExecucao.Status"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "LogExecucao"
+                    }
+                  },
+                  "Property": "Arquivos"
+                }
+              },
+              "queryRef": "LogExecucao.Arquivos"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "LogExecucao"
+                    }
+                  },
+                  "Property": "Linhas_Lidas"
+                }
+              },
+              "queryRef": "LogExecucao.Linhas_Lidas"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "LogExecucao"
+                    }
+                  },
+                  "Property": "Linhas_Rejeitadas"
+                }
+              },
+              "queryRef": "LogExecucao.Linhas_Rejeitadas"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "LogExecucao"
+                    }
+                  },
+                  "Property": "Scores_Calculados"
+                }
+              },
+              "queryRef": "LogExecucao.Scores_Calculados"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "LogExecucao"
+                  }
+                },
+                "Property": "Execucao_ID"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Execuções do pipeline'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

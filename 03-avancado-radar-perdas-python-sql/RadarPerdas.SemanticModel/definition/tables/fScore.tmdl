@@ -1,0 +1,114 @@
+table fScore
+	lineageTag: abeb033c-1949-553e-ad38-6415ce467102
+
+	column Cliente_ID
+		dataType: int64
+		isHidden
+		lineageTag: a3343ec4-986a-56fe-b49c-ee73ef32b2ac
+		summarizeBy: none
+		sourceColumn: Cliente_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Competencia
+		dataType: dateTime
+		isHidden
+		formatString: dd/mm/yyyy
+		lineageTag: ba4651da-cb11-5fae-acc2-a92b6f77dac7
+		summarizeBy: none
+		sourceColumn: Competencia
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Score
+		dataType: double
+		formatString: 0.0
+		lineageTag: f0e0aea9-ed4b-591a-b403-f5d01b6e5e7f
+		summarizeBy: none
+		sourceColumn: Score
+
+		annotation SummarizationSetBy = Automatic
+
+	column Faixa
+		dataType: string
+		lineageTag: d11cf5b1-49d5-5455-aec3-13ad91dad48c
+		summarizeBy: none
+		sourceColumn: Faixa
+
+		annotation SummarizationSetBy = Automatic
+
+	column Motivo_Principal
+		dataType: string
+		lineageTag: 2f1d095c-92aa-52cf-a1d9-691250f26458
+		summarizeBy: none
+		sourceColumn: Motivo_Principal
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pts_Queda
+		dataType: double
+		lineageTag: 2b50daf5-cf7f-5da8-a27d-cb5b79a2e793
+		summarizeBy: none
+		sourceColumn: Pts_Queda
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pts_Pares
+		dataType: double
+		lineageTag: 8932f1e1-b6b8-5db8-b195-4b8cd8654a29
+		summarizeBy: none
+		sourceColumn: Pts_Pares
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pts_Consumo_Baixo
+		dataType: double
+		lineageTag: 49af3a93-af4e-5f0d-8277-15498cb71d9c
+		summarizeBy: none
+		sourceColumn: Pts_Consumo_Baixo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pts_Estimada
+		dataType: double
+		lineageTag: 7ad56227-6e1c-513d-992a-7381174ecce6
+		summarizeBy: none
+		sourceColumn: Pts_Estimada
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pts_PNT
+		dataType: double
+		lineageTag: 81d6e0e5-2e0d-55e8-87bd-964b970175b9
+		summarizeBy: none
+		sourceColumn: Pts_PNT
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pts_Historico
+		dataType: double
+		lineageTag: 8163e7a2-d950-5915-a87d-b9c51909e302
+		summarizeBy: none
+		sourceColumn: Pts_Historico
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fScore = m
+		mode: import
+		source =
+				let
+				    Fonte = Sql.Database(Servidor, Banco),
+				    Dados = Fonte{[Schema = "dw", Item = "fScoreRisco"]}[Data],
+				    SemAuditoria = Table.RemoveColumns(Dados, {"Calculado_Em"}),
+				    Tipos = Table.TransformColumnTypes(SemAuditoria, {
+				        {"Cliente_ID", Int64.Type}, {"Competencia", type date}, {"Score", type number}, {"Faixa", type text},
+				        {"Motivo_Principal", type text}, {"Pts_Queda", type number}, {"Pts_Pares", type number},
+				        {"Pts_Consumo_Baixo", type number}, {"Pts_Estimada", type number}, {"Pts_PNT", type number},
+				        {"Pts_Historico", type number}})
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table
+

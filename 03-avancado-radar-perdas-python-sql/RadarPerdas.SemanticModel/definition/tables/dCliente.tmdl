@@ -1,0 +1,63 @@
+table dCliente
+	lineageTag: 03548fa7-f93c-5944-b35b-15cdaacc1a5f
+
+	column Cliente_ID
+		dataType: int64
+		formatString: 0
+		lineageTag: ab2e3be3-e072-55c3-87aa-7b46524b43d9
+		summarizeBy: none
+		sourceColumn: Cliente_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Alimentador_ID
+		dataType: string
+		isHidden
+		lineageTag: 6bd03152-e9a9-5249-b089-dfc8874a1c3b
+		summarizeBy: none
+		sourceColumn: Alimentador_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Classe
+		dataType: string
+		lineageTag: 42b587e2-a1e5-5ac3-af8d-d0da8ee16eed
+		summarizeBy: none
+		sourceColumn: Classe
+
+		annotation SummarizationSetBy = Automatic
+
+	column Tipo_Medidor
+		dataType: string
+		lineageTag: 4629dd2f-2986-5780-ab9c-82a8dd33daf9
+		summarizeBy: none
+		sourceColumn: Tipo_Medidor
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data_Ligacao
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: 2165e5dc-6565-524c-92a9-64a56d6c8ee5
+		summarizeBy: none
+		sourceColumn: Data_Ligacao
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition dCliente = m
+		mode: import
+		source =
+				let
+				    Fonte = Sql.Database(Servidor, Banco),
+				    Dados = Fonte{[Schema = "dw", Item = "dCliente"]}[Data],
+				    Colunas = Table.SelectColumns(Dados, {"Cliente_ID", "Alimentador_ID", "Classe", "Tipo_Medidor", "Data_Ligacao"}),
+				    Tipos = Table.TransformColumnTypes(Colunas, {
+				        {"Cliente_ID", Int64.Type}, {"Alimentador_ID", type text}, {"Classe", type text},
+				        {"Tipo_Medidor", type text}, {"Data_Ligacao", type date}})
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table
+

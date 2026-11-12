@@ -1,0 +1,118 @@
+table fInspecoes
+	lineageTag: b2c3e333-fe46-500e-b404-0a0cfbfea6b7
+
+	column Inspecao_ID
+		dataType: int64
+		formatString: 0
+		lineageTag: f3bcbbbe-fbf1-5214-99dd-854eb5ad8f8f
+		summarizeBy: none
+		sourceColumn: Inspecao_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cliente_ID
+		dataType: int64
+		isHidden
+		lineageTag: acf1c4aa-2a4e-5a4f-94dc-08eb6e003d08
+		summarizeBy: none
+		sourceColumn: Cliente_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data_Inspecao
+		dataType: dateTime
+		isHidden
+		formatString: dd/mm/yyyy
+		lineageTag: 7335affb-5dc8-5931-adb9-5ee14cedf43e
+		summarizeBy: none
+		sourceColumn: Data_Inspecao
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Competencia_Inspecao
+		dataType: dateTime
+		formatString: mm/yyyy
+		lineageTag: b640afed-eae9-567b-a5f4-15ed7559c312
+		summarizeBy: none
+		sourceColumn: Competencia_Inspecao
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Origem
+		dataType: string
+		lineageTag: 570ac657-e1ae-5542-bc1b-588b65c2bfc2
+		summarizeBy: none
+		sourceColumn: Origem
+
+		annotation SummarizationSetBy = Automatic
+
+	column Resultado
+		dataType: string
+		lineageTag: ad051560-8667-57dc-ab9c-1bddf19a9ebf
+		summarizeBy: none
+		sourceColumn: Resultado
+
+		annotation SummarizationSetBy = Automatic
+
+	column Irregular
+		dataType: int64
+		lineageTag: 04786e9a-d7ad-505a-a2cf-006a65fd8ca5
+		summarizeBy: none
+		sourceColumn: Irregular
+
+		annotation SummarizationSetBy = Automatic
+
+	column Energia_Recuperada_kWh
+		dataType: int64
+		formatString: #,0
+		lineageTag: 899b41c4-43d4-58a8-a383-6da71f79f4ef
+		summarizeBy: none
+		sourceColumn: Energia_Recuperada_kWh
+
+		annotation SummarizationSetBy = Automatic
+
+	column Score_Mes_Anterior
+		dataType: double
+		formatString: 0.0
+		lineageTag: 94c194c4-b5eb-595b-8c43-021fec3b6d6a
+		summarizeBy: none
+		sourceColumn: Score_Mes_Anterior
+
+		annotation SummarizationSetBy = Automatic
+
+	column Faixa_Mes_Anterior
+		dataType: string
+		lineageTag: 810b3299-1878-5b11-97b6-863b9a623fd2
+		summarizeBy: none
+		sourceColumn: Faixa_Mes_Anterior
+
+		annotation SummarizationSetBy = Automatic
+
+	column Motivo_Mes_Anterior
+		dataType: string
+		lineageTag: 570aa316-e81d-5d11-8f06-2400d0755d64
+		summarizeBy: none
+		sourceColumn: Motivo_Mes_Anterior
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fInspecoes = m
+		mode: import
+		source =
+				let
+				    Fonte = Sql.Database(Servidor, Banco),
+				    Dados = Fonte{[Schema = "dw", Item = "vw_inspecoes_score"]}[Data],
+				    Tipos = Table.TransformColumnTypes(Dados, {
+				        {"Inspecao_ID", Int64.Type}, {"Cliente_ID", Int64.Type}, {"Data_Inspecao", type date},
+				        {"Competencia_Inspecao", type date}, {"Origem", type text}, {"Resultado", type text},
+				        {"Irregular", Int64.Type}, {"Energia_Recuperada_kWh", Int64.Type}, {"Score_Mes_Anterior", type number},
+				        {"Faixa_Mes_Anterior", type text}, {"Motivo_Mes_Anterior", type text}})
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table
+

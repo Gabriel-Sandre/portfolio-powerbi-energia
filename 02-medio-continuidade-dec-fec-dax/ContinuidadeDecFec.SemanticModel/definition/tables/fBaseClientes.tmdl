@@ -1,0 +1,43 @@
+table fBaseClientes
+	lineageTag: 0afc5ca2-5dda-5ac5-b8da-b01d55bfc5ba
+
+	column Data
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		isHidden
+		lineageTag: 9f91f5ec-98a8-56e3-856d-2a850b5fbae2
+		summarizeBy: none
+		sourceColumn: Data
+
+		annotation SummarizationSetBy = Automatic
+
+	column Conjunto_ID
+		dataType: string
+		isHidden
+		lineageTag: 68812a31-042e-5f4a-b5b2-a3964f27f95b
+		summarizeBy: none
+		sourceColumn: Conjunto_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Clientes
+		dataType: int64
+		formatString: #,0
+		lineageTag: 3c691845-b97d-5119-b610-191f31f6913d
+		summarizeBy: none
+		sourceColumn: Clientes
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fBaseClientes = m
+		mode: import
+		source =
+				let
+				    Origem = Csv.Document(File.Contents(PastaDados & "\fBaseClientes.csv"), [Delimiter = ";", Encoding = 65001, QuoteStyle = QuoteStyle.None]),
+				    Cabecalhos = Table.PromoteHeaders(Origem, [PromoteAllScalars = true]),
+				    Tipos = Table.TransformColumnTypes(Cabecalhos, {
+				        {"Data", type date}, {"Conjunto_ID", type text}, {"Clientes", Int64.Type}}, "pt-BR")
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table

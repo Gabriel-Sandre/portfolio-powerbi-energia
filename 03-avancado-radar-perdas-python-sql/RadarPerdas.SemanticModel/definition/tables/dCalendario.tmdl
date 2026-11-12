@@ -1,0 +1,60 @@
+table dCalendario
+	lineageTag: 769819f6-b052-5b23-9ec2-7260681e91d4
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: dd/mm/yyyy
+		lineageTag: e01da986-8a9f-53d2-bbac-07b0ce8e8c9b
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ano
+		dataType: int64
+		formatString: 0
+		lineageTag: 4c9c9305-11eb-52c6-b683-bd5bd219fad7
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Ano]
+
+		annotation SummarizationSetBy = Automatic
+
+	column AnoMes
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 27b52cf7-292d-5bd3-a535-bd3a47519918
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [AnoMes]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mês/Ano
+		dataType: string
+		lineageTag: 010a898c-6615-5e7d-9623-c4f73c797a8a
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Mês/Ano]
+		sortByColumn: AnoMes
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dCalendario = calculated
+		mode: import
+		source =
+				ADDCOLUMNS (
+				    CALENDAR ( DATE ( 2025, 1, 1 ), DATE ( 2026, 12, 31 ) ),
+				    "Ano", YEAR ( [Date] ),
+				    "AnoMes", YEAR ( [Date] ) * 100 + MONTH ( [Date] ),
+				    "Mês/Ano", SWITCH ( MONTH ( [Date] ), 1, "Jan", 2, "Fev", 3, "Mar", 4, "Abr", 5, "Mai", 6, "Jun",
+				                        7, "Jul", 8, "Ago", 9, "Set", 10, "Out", 11, "Nov", 12, "Dez" )
+				                 & "/" & RIGHT ( YEAR ( [Date] ), 2 )
+				)
+
+	annotation PBI_ResultType = Table
+

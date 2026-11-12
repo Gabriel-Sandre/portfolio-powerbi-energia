@@ -184,10 +184,22 @@ DIVIDE ( [Conjuntos Acima do Limite DEC], COUNTROWS ( VALUES ( dConjuntos[Conjun
 
 // ===================== 5. Rankings e Pareto =====================
 
+// ARMADILHA: com ALLSELECTED ( dConjuntos[Conjunto] ), uma tabela que também mostra a Regional
+// ranqueia DENTRO de cada regional (o filtro da coluna Regional na linha continua valendo) e
+// aparecem vários "1º lugar". ALLSELECTED ( dConjuntos ) limpa todas as colunas da dimensão.
+// 2ª ARMADILHA: o RANKX calcula o valor do conjunto atual duas vezes (na linha e na lista).
+// Somas de decimais em ordens diferentes podem diferir na 15ª casa, e o conjunto "fica acima
+// de si mesmo" (Queimados 11,37 h aparecia em 8º, e não em 7º). Arredondar as duas pontas resolve.
 Ranking DEC Conjunto =
 IF (
     HASONEVALUE ( dConjuntos[Conjunto] ),
-    RANKX ( ALLSELECTED ( dConjuntos[Conjunto] ), [DEC 12 Meses (h)], , DESC, DENSE )
+    RANKX (
+        ALLSELECTED ( dConjuntos ),
+        ROUND ( [DEC 12 Meses (h)], 6 ),
+        ROUND ( [DEC 12 Meses (h)], 6 ),
+        DESC,
+        DENSE
+    )
 )
 
 // Pareto: % acumulado do DEC, da causa que mais pesa para a que menos pesa.

@@ -4,6 +4,28 @@
 
 *Dados 100% simulados. Projeto de portfólio independente, sem vínculo com nenhuma empresa.*
 
+![Balanço energético: energia injetada, perda não técnica em MWh, % e R$, por mês e por subestação](imagens/01-balanco-energetico.png)
+
+<table>
+<tr>
+<td width="50%"><img src="imagens/02-risco-de-clientes.png" alt="Fila de inspeção priorizada pelo score"><br><sub><b>Risco de Clientes</b>: a fila de inspeção do mês, com o motivo de cada cliente</sub></td>
+<td width="50%"><img src="imagens/03-efetividade-das-inspecoes.png" alt="Backtest do score: taxa de irregularidade por faixa"><br><sub><b>Efetividade</b>: o backtest que mostra se o score acerta</sub></td>
+</tr>
+<tr>
+<td width="50%"><img src="imagens/04-saude-do-pipeline.png" alt="Execuções do pipeline, arquivos e rejeições"><br><sub><b>Saúde do Pipeline</b>: cada execução, arquivo e linha rejeitada</sub></td>
+<td width="50%"></td>
+</tr>
+</table>
+
+## Abrir o painel pronto
+
+1. Rode o pipeline (seção **Como rodar**) para o banco `RadarPerdas` existir no SQL Server local.
+2. Dê dois cliques em **`RadarPerdas.pbip`** e clique em **Página Inicial > Atualizar**.
+3. Na primeira vez, o Power BI pede a credencial do banco: **Windows > Usar minhas credenciais atuais > Conectar**. Se avisar que não há criptografia, confirme com **OK** (é um banco local).
+4. Para outro servidor: **Transformar dados > Gerenciar parâmetros > Servidor / Banco**.
+
+O `.pbip` foi gerado por `criar_pbip.py` a partir de `powerbi/consultas.pq`, `powerbi/medidas.dax` e `powerbi/tabelas_calculadas.dax`, usando a biblioteca `../ferramentas/pbip.py`.
+
 ## O problema de negócio
 
 Toda energia que entra num alimentador (medida na subestação) e não vira fatura é **perda**:
@@ -54,6 +76,10 @@ As equipes de inspeção são caras e limitadas. Se forem a endereços **ao acas
 
 ```
 03-avancado-radar-perdas-python-sql/
+├── RadarPerdas.pbip          # abre o painel pronto (4 páginas)
+├── RadarPerdas.SemanticModel/ + .Report/   # modelo (TMDL) e relatório (PBIR)
+├── criar_pbip.py             # gerou o .pbip a partir de powerbi/
+├── imagens/                  # prints das 4 páginas
 ├── src/
 │   ├── gerar_dados.py        # simula 22 meses do sistema de origem (12 mil clientes, 54 alimentadores)
 │   ├── simular_chegada.py    # "entrega" N meses na pasta entrada/
@@ -68,7 +94,8 @@ As equipes de inspeção são caras e limitadas. Se forem a endereços **ao acas
 │   ├── 03_views.sql          # balanço, features (janelas), backtest, fila de inspeção
 │   └── 04_consultas_analiticas.sql   # consultas para estudar/mostrar
 ├── powerbi/
-│   ├── consultas.pq          # Power Query com parâmetros Servidor/Banco
+│   ├── consultas.pq          # Power Query com parâmetros Servidor/Banco e tipos explícitos
+│   ├── tabelas_calculadas.dax  # calendário e tabela de tarifas
 │   └── medidas.dax           # ~40 medidas
 └── agendar_pipeline.ps1
 ```

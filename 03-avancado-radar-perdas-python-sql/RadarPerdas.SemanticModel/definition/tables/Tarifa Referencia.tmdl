@@ -1,0 +1,19 @@
+table 'Tarifa Referencia'
+	lineageTag: e1b5b6c6-8000-543f-9a97-aa37b612dc0c
+
+	column 'Tarifa Referencia'
+		dataType: double
+		formatString: R$ 0.00
+		lineageTag: b618a0db-0061-5311-a79b-5cdb04406d0e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Tarifa Referencia]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Tarifa Referencia' = calculated
+		mode: import
+		source = SELECTCOLUMNS ( GENERATESERIES ( 0.50, 1.50, 0.05 ), "Tarifa Referencia", ROUND ( [Value], 2 ) )
+
+	annotation PBI_ResultType = Table
+

@@ -1,23 +1,6 @@
 // =====================================================================
-// Projeto 3 - Tabelas e medidas DAX
+// Projeto 3 - Medidas DAX (as tabelas calculadas estão em tabelas_calculadas.dax)
 // =====================================================================
-
-// ---------- Tabela calculada (Modelagem > Nova tabela) ----------
-// Marcar como tabela de datas (coluna Date). Classificar "Mês/Ano" por "AnoMes".
-dCalendario =
-ADDCOLUMNS (
-    CALENDAR ( DATE ( 2025, 1, 1 ), DATE ( 2026, 12, 31 ) ),
-    "Ano", YEAR ( [Date] ),
-    "AnoMes", YEAR ( [Date] ) * 100 + MONTH ( [Date] ),
-    "Mês/Ano", SWITCH ( MONTH ( [Date] ), 1, "Jan", 2, "Fev", 3, "Mar", 4, "Abr", 5, "Mai", 6, "Jun",
-                        7, "Jul", 8, "Ago", 9, "Set", 10, "Out", 11, "Nov", 12, "Dez" )
-                 & "/" & RIGHT ( YEAR ( [Date] ), 2 )
-)
-
-// ---------- Parâmetro What-if (Modelagem > Novos parâmetros > Intervalo numérico) ----------
-// Nome: Tarifa Referencia | 0,50 a 1,50 | incremento 0,05 | padrão 0,95  (R$/kWh)
-// Permite à diretoria simular "quanto vale" a energia perdida com outra tarifa.
-
 
 // ===================== Balanço energético =====================
 
@@ -150,6 +133,9 @@ SUM ( LogExecucao[Linhas_Lidas] )
 
 Linhas Rejeitadas =
 SUM ( LogExecucao[Linhas_Rejeitadas] )
+
+Linhas Rejeitadas por Motivo =
+SUM ( Rejeicoes[Linhas] )
 
 % Rejeição =
 DIVIDE ( [Linhas Rejeitadas], [Linhas Lidas] )

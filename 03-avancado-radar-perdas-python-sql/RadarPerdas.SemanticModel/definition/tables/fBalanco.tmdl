@@ -1,0 +1,315 @@
+table fBalanco
+	lineageTag: 971ccc6c-2fe4-5ddd-b8ff-8cfd45c913e5
+
+	measure 'Energia Injetada (MWh)' = DIVIDE ( SUM ( fBalanco[Energia_Injetada_kWh] ), 1000 )
+		formatString: #,0
+		displayFolder: Balanço energético
+		lineageTag: 935e5a55-a566-51f0-bab8-d33de4779763
+
+	measure 'Energia Faturada (MWh)' = DIVIDE ( SUM ( fBalanco[Energia_Faturada_kWh] ), 1000 )
+		formatString: #,0
+		displayFolder: Balanço energético
+		lineageTag: ac945f1c-82dd-5dee-9eb7-6a67d5e4c582
+
+	measure 'Perda Técnica (MWh)' = DIVIDE ( SUM ( fBalanco[Perda_Tecnica_kWh] ), 1000 )
+		formatString: #,0
+		displayFolder: Balanço energético
+		lineageTag: 7257bfdb-3740-5972-8378-3b8f913c920a
+
+	measure 'PNT (MWh)' = DIVIDE ( SUM ( fBalanco[PNT_kWh] ), 1000 )
+		formatString: #,0
+		displayFolder: Balanço energético
+		lineageTag: f1c715ea-4500-5596-b904-9cce8d3a2f4c
+
+	measure 'Perda Total (MWh)' = [Perda Técnica (MWh)] + [PNT (MWh)]
+		formatString: #,0
+		displayFolder: Balanço energético
+		lineageTag: 01d8af7f-b9f7-5e6b-bb4c-4f728bcbb343
+
+	measure 'PNT % da Energia Injetada' = DIVIDE ( [PNT (MWh)], [Energia Injetada (MWh)] )
+		formatString: 0.0%
+		displayFolder: Balanço energético
+		lineageTag: a8dfbe5e-29b4-5584-a18d-d9c3dd808256
+
+	measure 'PNT % sobre o Mercado' = DIVIDE ( [PNT (MWh)], [Energia Faturada (MWh)] )
+		formatString: 0.0%
+		displayFolder: Balanço energético
+		lineageTag: 7e738a6e-680d-57b6-a1c8-906ad7ffca03
+
+	measure 'Tarifa de Referência (R$/kWh)' = SELECTEDVALUE ( 'Tarifa Referencia'[Tarifa Referencia], 0.95 )
+		formatString: R$ 0.00
+		displayFolder: Balanço energético
+		lineageTag: fbf04089-92f0-54de-b964-36fae5e618b2
+
+	measure 'PNT (R$)' = [PNT (MWh)] * 1000 * [Tarifa de Referência (R$/kWh)]
+		formatString: R$ #,0
+		displayFolder: Balanço energético
+		lineageTag: 8488147c-2485-5d82-9f97-9e211f45276c
+
+	measure 'PNT % 12 Meses' =
+			VAR Referencia = MAX ( dCalendario[Date] )
+			RETURN
+			    CALCULATE (
+			        [PNT % da Energia Injetada],
+			        DATESINPERIOD ( dCalendario[Date], Referencia, -12, MONTH )
+			    )
+		formatString: 0.0%
+		displayFolder: Balanço energético
+		lineageTag: 01dcbecf-48d5-57d7-bd43-d3920996ed11
+
+	measure 'Última Competência Score' = MAX ( fScore[Competencia] )
+		formatString: mm/yyyy
+		displayFolder: Score de risco
+		lineageTag: c69b1a3b-fe04-5894-aaf7-8ae1c04787c2
+
+	measure 'Clientes Monitorados' =
+			VAR Ultima = [Última Competência Score]
+			RETURN
+			    CALCULATE ( DISTINCTCOUNT ( fScore[Cliente_ID] ), fScore[Competencia] = Ultima )
+		formatString: #,0
+		displayFolder: Score de risco
+		lineageTag: c0345762-b56f-53fd-9836-dc76d759604d
+
+	measure 'Clientes Risco Alto' =
+			VAR Ultima = [Última Competência Score]
+			RETURN
+			    CALCULATE ( DISTINCTCOUNT ( fScore[Cliente_ID] ), fScore[Competencia] = Ultima, fScore[Faixa] = "Alto" )
+		formatString: #,0
+		displayFolder: Score de risco
+		lineageTag: 942037d3-7d27-5f36-9cd5-c2ed8f2bba6f
+
+	measure 'Clientes Risco Médio' =
+			VAR Ultima = [Última Competência Score]
+			RETURN
+			    CALCULATE ( DISTINCTCOUNT ( fScore[Cliente_ID] ), fScore[Competencia] = Ultima, fScore[Faixa] = "Médio" )
+		formatString: #,0
+		displayFolder: Score de risco
+		lineageTag: 00689c1a-e174-520a-b9ea-c896b4f92fd4
+
+	measure '% Clientes Risco Alto' = DIVIDE ( [Clientes Risco Alto], [Clientes Monitorados] )
+		formatString: 0.0%
+		displayFolder: Score de risco
+		lineageTag: b7fd6b4f-2192-5a12-a08a-46bb295d9098
+
+	measure 'Score Médio' = AVERAGE ( fScore[Score] )
+		formatString: 0.0
+		displayFolder: Score de risco
+		lineageTag: 1abcb2f9-0aee-5764-839a-0a5f1142a035
+
+	measure 'Clientes na Fila de Inspeção' = COUNTROWS ( FilaInspecao )
+		formatString: #,0
+		displayFolder: Score de risco
+		lineageTag: 1f213f96-ddaa-55dc-ac62-c752cd746ee7
+
+	measure Inspeções = COUNTROWS ( fInspecoes )
+		formatString: #,0
+		displayFolder: Inspeções e efetividade
+		lineageTag: f3776870-87e8-5bf2-8b56-6de4e35930c7
+
+	measure Irregularidades = SUM ( fInspecoes[Irregular] )
+		formatString: #,0
+		displayFolder: Inspeções e efetividade
+		lineageTag: f6cc160c-4446-534a-a9b2-2d94982422a6
+
+	measure 'Taxa de Acerto' = DIVIDE ( [Irregularidades], [Inspeções] )
+		formatString: 0.0%
+		displayFolder: Inspeções e efetividade
+		lineageTag: bbd6bd04-fb03-5005-9fa3-88eb6689000d
+
+	measure 'Taxa de Acerto Aleatória' = CALCULATE ( [Taxa de Acerto], fInspecoes[Origem] = "Aleatória" )
+		formatString: 0.0%
+		displayFolder: Inspeções e efetividade
+		lineageTag: 1e147476-086a-5265-8852-33610eff7f26
+
+	measure 'Taxa de Acerto Score Alto' = CALCULATE ( [Taxa de Acerto], fInspecoes[Origem] = "Aleatória", fInspecoes[Faixa_Mes_Anterior] = "Alto" )
+		formatString: 0.0%
+		displayFolder: Inspeções e efetividade
+		lineageTag: 34363c10-0743-5598-b607-028e09173f01
+
+	measure 'Taxa de Acerto Score Baixo' = CALCULATE ( [Taxa de Acerto], fInspecoes[Origem] = "Aleatória", fInspecoes[Faixa_Mes_Anterior] = "Baixo" )
+		formatString: 0.0%
+		displayFolder: Inspeções e efetividade
+		lineageTag: 20293e5f-1489-5ad8-a523-96674e1ddecb
+
+	measure 'Ganho do Score (x)' = DIVIDE ( [Taxa de Acerto Score Alto], [Taxa de Acerto Aleatória] )
+		formatString: 0.0
+		displayFolder: Inspeções e efetividade
+		lineageTag: 1d77c826-4f7d-5610-a1be-8f41df71113e
+
+	measure 'Irregularidades Potenciais com Score' = [Inspeções] * [Taxa de Acerto Score Alto]
+		formatString: #,0
+		displayFolder: Inspeções e efetividade
+		lineageTag: efd98c31-fd7f-5a3b-a00f-674e71da6686
+
+	measure 'Irregularidades Adicionais com Score' = [Irregularidades Potenciais com Score] - [Irregularidades]
+		formatString: #,0
+		displayFolder: Inspeções e efetividade
+		lineageTag: 3ea9c824-4968-58c6-9afe-789f1e143eed
+
+	measure 'Energia Recuperada (MWh)' = DIVIDE ( SUM ( fInspecoes[Energia_Recuperada_kWh] ), 1000 )
+		formatString: #,0
+		displayFolder: Inspeções e efetividade
+		lineageTag: bfd31f88-18c8-5e03-aa67-90f435c2f9e4
+
+	measure 'Receita Recuperada (R$)' = [Energia Recuperada (MWh)] * 1000 * [Tarifa de Referência (R$/kWh)]
+		formatString: R$ #,0
+		displayFolder: Inspeções e efetividade
+		lineageTag: 4e000c8e-cf53-5c7b-a23a-1c9943282b84
+
+	measure 'Energia Recuperada por Inspeção (kWh)' = DIVIDE ( SUM ( fInspecoes[Energia_Recuperada_kWh] ), [Inspeções] )
+		formatString: #,0
+		displayFolder: Inspeções e efetividade
+		lineageTag: 2b2a0d7b-0d0d-5ae4-93bd-7b7b75f2289e
+
+	measure 'Última Execução' = MAX ( LogExecucao[Fim] )
+		formatString: dd/mm/yyyy hh:nn
+		displayFolder: Saúde do pipeline
+		lineageTag: 015ab5e2-2920-506c-9746-3a4fd9993cc8
+
+	measure 'Status Última Execução' =
+			VAR UltimoId = MAX ( LogExecucao[Execucao_ID] )
+			RETURN
+			    LOOKUPVALUE ( LogExecucao[Status], LogExecucao[Execucao_ID], UltimoId )
+		displayFolder: Saúde do pipeline
+		lineageTag: 9e250db5-e9f9-5439-a288-db14bbb98f53
+
+	measure Execuções = COUNTROWS ( LogExecucao )
+		formatString: #,0
+		displayFolder: Saúde do pipeline
+		lineageTag: d6ae675d-e5fc-5eca-8cd4-203de59442b2
+
+	measure 'Linhas Lidas' = SUM ( LogExecucao[Linhas_Lidas] )
+		formatString: #,0
+		displayFolder: Saúde do pipeline
+		lineageTag: 53827ccb-96fa-5e4e-85a9-77ac99c8b767
+
+	measure 'Linhas Rejeitadas' = SUM ( LogExecucao[Linhas_Rejeitadas] )
+		formatString: #,0
+		displayFolder: Saúde do pipeline
+		lineageTag: 8ad687a7-28f4-51f9-b62c-95e91218f562
+
+	measure 'Linhas Rejeitadas por Motivo' = SUM ( Rejeicoes[Linhas] )
+		formatString: #,0
+		displayFolder: Saúde do pipeline
+		lineageTag: 4c1201d8-6599-5077-aa48-c971af6e21f5
+
+	measure '% Rejeição' = DIVIDE ( [Linhas Rejeitadas], [Linhas Lidas] )
+		formatString: 0.0%
+		displayFolder: Saúde do pipeline
+		lineageTag: 231b1905-1fbb-5ee2-9fa2-a5002984e84d
+
+	measure 'Duração Média Execução (min)' = AVERAGEX ( LogExecucao, DATEDIFF ( LogExecucao[Inicio], LogExecucao[Fim], SECOND ) / 60 )
+		formatString: 0.0
+		displayFolder: Saúde do pipeline
+		lineageTag: 32de9891-e304-5779-b5ee-4296954b5eb8
+
+	measure 'Texto Atualização' =
+			"Dados atualizados em " & FORMAT ( [Última Execução], "dd/mm/yyyy hh:nn" )
+			    & " · status: " & [Status Última Execução]
+		displayFolder: Saúde do pipeline
+		lineageTag: 403b97a7-3b88-5d28-9a0f-d866cdee81ba
+
+	measure 'Cor Status Pipeline' = SWITCH ( [Status Última Execução], "Sucesso", "#2E7D32", "Concluído com erros", "#F9A825", "#C62828" )
+		displayFolder: Saúde do pipeline
+		lineageTag: d2c12496-44a1-59b3-b2a9-a18f7fc8cc69
+
+	column Alimentador_ID
+		dataType: string
+		isHidden
+		lineageTag: 8eb91800-d50a-5c67-a484-9186622be5e5
+		summarizeBy: none
+		sourceColumn: Alimentador_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Competencia
+		dataType: dateTime
+		isHidden
+		formatString: dd/mm/yyyy
+		lineageTag: 21dbb014-1855-536a-a200-39aa056d56ce
+		summarizeBy: none
+		sourceColumn: Competencia
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Energia_Injetada_kWh
+		dataType: int64
+		formatString: #,0
+		lineageTag: ae3913cb-25d9-5bff-b155-a9e58e03e50a
+		summarizeBy: none
+		sourceColumn: Energia_Injetada_kWh
+
+		annotation SummarizationSetBy = Automatic
+
+	column Energia_Faturada_kWh
+		dataType: int64
+		formatString: #,0
+		lineageTag: 4305526f-951d-5f31-bcd9-1a4e8d661cca
+		summarizeBy: none
+		sourceColumn: Energia_Faturada_kWh
+
+		annotation SummarizationSetBy = Automatic
+
+	column Perda_Tecnica_kWh
+		dataType: int64
+		formatString: #,0
+		lineageTag: 7efffbb0-c207-522c-a8af-510810bbef3a
+		summarizeBy: none
+		sourceColumn: Perda_Tecnica_kWh
+
+		annotation SummarizationSetBy = Automatic
+
+	column PNT_kWh
+		dataType: int64
+		formatString: #,0
+		lineageTag: ada39e11-b18f-5649-af1d-b3509b157edf
+		summarizeBy: none
+		sourceColumn: PNT_kWh
+
+		annotation SummarizationSetBy = Automatic
+
+	column PNT_Pct_Injetada
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 6c70cf03-e298-536f-b2ed-d925a2742ebe
+		summarizeBy: none
+		sourceColumn: PNT_Pct_Injetada
+
+		annotation SummarizationSetBy = Automatic
+
+	column Clientes_Faturados
+		dataType: int64
+		formatString: #,0
+		lineageTag: 4ddd5428-472e-5110-97a2-5d152a7aaac0
+		summarizeBy: none
+		sourceColumn: Clientes_Faturados
+
+		annotation SummarizationSetBy = Automatic
+
+	column Leituras_Estimadas
+		dataType: int64
+		formatString: #,0
+		lineageTag: a5ca5d71-453d-5b9c-ad70-ea29baf7c246
+		summarizeBy: none
+		sourceColumn: Leituras_Estimadas
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fBalanco = m
+		mode: import
+		source =
+				let
+				    Fonte = Sql.Database(Servidor, Banco),
+				    Dados = Fonte{[Schema = "dw", Item = "vw_balanco_energetico"]}[Data],
+				    Tipos = Table.TransformColumnTypes(Dados, {
+				        {"Alimentador_ID", type text}, {"Competencia", type date},
+				        {"Energia_Injetada_kWh", Int64.Type}, {"Energia_Faturada_kWh", Int64.Type},
+				        {"Perda_Tecnica_kWh", Int64.Type}, {"PNT_kWh", Int64.Type}, {"PNT_Pct_Injetada", type number},
+				        {"Clientes_Faturados", Int64.Type}, {"Leituras_Estimadas", Int64.Type}})
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "cartaoAcima",
+  "position": {
+    "x": 1006,
+    "y": 80,
+    "z": 1700,
+    "height": 100,
+    "width": 254
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fInterrupcoes"
+                    }
+                  },
+                  "Property": "Conjuntos Acima do Limite DEC"
+                }
+              },
+              "queryRef": "fInterrupcoes.Conjuntos Acima do Limite DEC"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

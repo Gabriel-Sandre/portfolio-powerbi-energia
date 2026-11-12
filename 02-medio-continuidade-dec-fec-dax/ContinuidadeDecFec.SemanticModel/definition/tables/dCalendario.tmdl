@@ -1,0 +1,115 @@
+table dCalendario
+	lineageTag: 36105126-feb1-5b97-a1d4-5edef21dad25
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: dd/mm/yyyy
+		lineageTag: 25879d7d-4aae-5e02-8428-9925c9dd1d26
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ano
+		dataType: int64
+		formatString: 0
+		lineageTag: 721512c2-be8d-5de0-aca7-f25a219fbadb
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Ano]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Mês Nº'
+		dataType: int64
+		isHidden
+		lineageTag: 6bcfbeed-b90d-5430-9f04-473b6aa96509
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Mês Nº]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Mês'
+		dataType: string
+		lineageTag: ba8eedf0-daf2-5cf5-97af-7f27ef8a8594
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Mês]
+		sortByColumn: 'Mês Nº'
+
+		annotation SummarizationSetBy = Automatic
+
+	column AnoMes
+		dataType: int64
+		formatString: 0
+		isHidden
+		lineageTag: 200dc0b1-a979-5014-8b2d-2dc97a1f42fd
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [AnoMes]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Mês/Ano'
+		dataType: string
+		lineageTag: 267453a6-8a15-5af5-8bd8-2de76c20cd0e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Mês/Ano]
+		sortByColumn: AnoMes
+
+		annotation SummarizationSetBy = Automatic
+
+	column Trimestre
+		dataType: string
+		lineageTag: 906726f0-e4ec-5671-9565-b3c789cc5c86
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Trimestre]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Período Climático'
+		dataType: string
+		lineageTag: 9d37a29d-347d-5294-ae03-5f88ba485389
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Período Climático]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Tem Dados'
+		dataType: boolean
+		lineageTag: e14fa582-1621-56d8-8a6c-12763b838947
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Tem Dados]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dCalendario = calculated
+		mode: import
+		source =
+				VAR DataMin = DATE ( YEAR ( MIN ( fInterrupcoes[Data] ) ), 1, 1 )
+				VAR DataMax = DATE ( YEAR ( MAX ( fInterrupcoes[Data] ) ), 12, 31 )
+				RETURN
+				    ADDCOLUMNS (
+				        CALENDAR ( DataMin, DataMax ),
+				        "Ano", YEAR ( [Date] ),
+				        "Mês Nº", MONTH ( [Date] ),
+				        "Mês", SWITCH ( MONTH ( [Date] ), 1, "Jan", 2, "Fev", 3, "Mar", 4, "Abr", 5, "Mai", 6, "Jun",
+				                        7, "Jul", 8, "Ago", 9, "Set", 10, "Out", 11, "Nov", 12, "Dez" ),
+				        "AnoMes", YEAR ( [Date] ) * 100 + MONTH ( [Date] ),
+				        "Mês/Ano", SWITCH ( MONTH ( [Date] ), 1, "Jan", 2, "Fev", 3, "Mar", 4, "Abr", 5, "Mai", 6, "Jun",
+				                            7, "Jul", 8, "Ago", 9, "Set", 10, "Out", 11, "Nov", 12, "Dez" )
+				                     & "/" & RIGHT ( YEAR ( [Date] ), 2 ),
+				        "Trimestre", "T" & QUARTER ( [Date] ),
+				        "Período Climático", IF ( MONTH ( [Date] ) IN { 12, 1, 2, 3 }, "Verão (chuvas)", "Demais meses" ),
+				        "Tem Dados", [Date] <= MAX ( fInterrupcoes[Data] )
+				    )
+
+	annotation PBI_ResultType = Table

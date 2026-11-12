@@ -4,6 +4,27 @@
 
 *Dados 100% simulados. Projeto de portfólio independente, sem vínculo com nenhuma empresa. Regras simplificadas a partir do PRODIST Módulo 8.*
 
+![Painel Executivo: DEC e FEC dos últimos 12 meses, limite e conjuntos acima do limite](imagens/01-painel-executivo.png)
+
+<table>
+<tr>
+<td width="50%"><img src="imagens/02-conjuntos.png" alt="Ranking de conjuntos com status colorido e dispersão de % do limite"><br><sub><b>Conjuntos</b>: quem está fora do limite e quem está chegando perto</sub></td>
+<td width="50%"><img src="imagens/03-causas.png" alt="Pareto das causas do DEC e peso das causas externas"><br><sub><b>Causas</b>: Pareto, Top N e o peso das causas externas (58,8%)</sub></td>
+</tr>
+<tr>
+<td width="50%"><img src="imagens/04-detalhe-operacional.png" alt="Tabela de interrupções e efeito dos dias críticos"><br><sub><b>Detalhe operacional</b>: cada interrupção e o efeito dos dias críticos</sub></td>
+<td width="50%"></td>
+</tr>
+</table>
+
+## Abrir o painel pronto
+
+1. Dê dois cliques em **`ContinuidadeDecFec.pbip`** (Power BI Desktop recente).
+2. Clique em **Página Inicial > Atualizar** (o Git guarda o modelo e o relatório, não os dados).
+3. Se a pasta for outra: **Transformar dados > Gerenciar parâmetros > PastaDados**.
+
+O `.pbip` foi gerado por `criar_pbip.py` a partir de `powerquery/consultas.pq` e `dax/02_medidas.dax`, usando a biblioteca `../ferramentas/pbip.py`. Para aprender montando do zero, ignore o `.pbip` e siga o passo a passo abaixo.
+
 ## O problema de negócio
 
 Toda distribuidora tem metas anuais de continuidade definidas pela ANEEL **para cada conjunto elétrico**:
@@ -40,6 +61,10 @@ Estourar o limite significa compensação financeira aos clientes, pressão regu
 
 ```
 02-medio-continuidade-dec-fec-dax/
+├── ContinuidadeDecFec.pbip  # abre o painel pronto (4 páginas)
+├── ContinuidadeDecFec.SemanticModel/ + .Report/   # modelo (TMDL) e relatório (PBIR)
+├── criar_pbip.py            # gerou o .pbip a partir de powerquery/ e dax/
+├── imagens/                 # prints das 4 páginas
 ├── gerar_dados.py           # recria os dados (semente fixa)
 ├── dados/
 │   ├── dConjuntos.csv       # 39 conjuntos, clientes e limites anuais

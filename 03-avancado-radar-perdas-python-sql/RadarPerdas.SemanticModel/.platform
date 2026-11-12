@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "RadarPerdas"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "534dbfd6-32f6-4bfe-b8ed-4d879279d465"
+  }
+}

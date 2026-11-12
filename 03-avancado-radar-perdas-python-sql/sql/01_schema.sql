@@ -134,6 +134,13 @@ CREATE TABLE dw.fScoreRisco (
     CONSTRAINT PK_fScoreRisco PRIMARY KEY (Cliente_ID, Competencia)
 );
 
+/* A fila de inspeção e o Power BI filtram o score pelo MÊS (o último). Com a chave primária
+   começando por Cliente_ID, isso varria as ~260 mil linhas e pedia memória para juntar e ordenar.
+   O índice por Competencia vai direto às ~12 mil linhas do mês. */
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_fScoreRisco_Competencia')
+CREATE NONCLUSTERED INDEX IX_fScoreRisco_Competencia
+    ON dw.fScoreRisco (Competencia, Faixa) INCLUDE (Score, Motivo_Principal);
+
 /* ------------------------------ LOGS ------------------------------- */
 IF OBJECT_ID('dw.LogExecucao') IS NULL
 CREATE TABLE dw.LogExecucao (

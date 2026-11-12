@@ -1,0 +1,19 @@
+relationship 87446a57-453a-5d59-bb45-6ef7e455308c
+	fromColumn: fInterrupcoes.Conjunto_ID
+	toColumn: dConjuntos.Conjunto_ID
+
+relationship f9008800-9af9-5d4e-b5d1-d92602e19ff2
+	fromColumn: fBaseClientes.Conjunto_ID
+	toColumn: dConjuntos.Conjunto_ID
+
+relationship d8778ae5-79bf-5432-8fdf-6bb9b3d83fd3
+	fromColumn: fInterrupcoes.Causa_ID
+	toColumn: dCausas.Causa_ID
+
+relationship f59b4cae-65b6-52b8-9ff1-aef95f228d8c
+	fromColumn: fInterrupcoes.Data
+	toColumn: dCalendario.Date
+
+relationship 0a49d0f6-56c0-5e60-b2b2-99220900007d
+	fromColumn: fBaseClientes.Data
+	toColumn: dCalendario.Date

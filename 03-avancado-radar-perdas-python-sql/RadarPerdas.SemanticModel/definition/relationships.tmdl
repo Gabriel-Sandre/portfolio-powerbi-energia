@@ -1,0 +1,40 @@
+relationship d228546d-07a7-53ba-ae99-5a0cbc2a3267
+	fromColumn: dCliente.Alimentador_ID
+	toColumn: dAlimentador.Alimentador_ID
+
+relationship e097ed91-1b1d-5789-bada-f56ba52f9535
+	fromColumn: fBalanco.Alimentador_ID
+	toColumn: dAlimentador.Alimentador_ID
+
+relationship 92325ef9-9b1d-5cc7-a773-1c5dac1ff3df
+	fromColumn: fScore.Cliente_ID
+	toColumn: dCliente.Cliente_ID
+
+relationship 40669944-e396-5d64-bba5-5ce3fc537173
+	fromColumn: fInspecoes.Cliente_ID
+	toColumn: dCliente.Cliente_ID
+
+relationship 6c23fb2a-cda1-5392-88c6-8f8c464cc0ad
+	fromColumn: FilaInspecao.Cliente_ID
+	toColumn: dCliente.Cliente_ID
+
+relationship e8f27b05-64a7-568b-8b21-ac4b79bf4bf3
+	fromColumn: fBalanco.Competencia
+	toColumn: dCalendario.Date
+
+relationship 7622d8b8-cc32-57af-a3f5-7d9d0655a450
+	fromColumn: fScore.Competencia
+	toColumn: dCalendario.Date
+
+relationship 2df1d157-5875-5c47-b833-8de9d75cf045
+	fromColumn: fInspecoes.Data_Inspecao
+	toColumn: dCalendario.Date
+
+relationship 2188a594-d09b-588a-9414-da604daf7634
+	fromColumn: LogArquivo.Execucao_ID
+	toColumn: LogExecucao.Execucao_ID
+
+relationship 58a72715-ae4c-55e6-b3ba-6a96cca6b7b7
+	fromColumn: Rejeicoes.Execucao_ID
+	toColumn: LogExecucao.Execucao_ID
+

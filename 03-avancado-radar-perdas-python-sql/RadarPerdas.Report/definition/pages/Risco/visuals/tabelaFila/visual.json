@@ -1,0 +1,154 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "tabelaFila",
+  "position": {
+    "x": 220,
+    "y": 192,
+    "z": 1800,
+    "height": 508,
+    "width": 700
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FilaInspecao"
+                    }
+                  },
+                  "Property": "Prioridade"
+                }
+              },
+              "queryRef": "FilaInspecao.Prioridade"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FilaInspecao"
+                    }
+                  },
+                  "Property": "Cliente_ID"
+                }
+              },
+              "queryRef": "FilaInspecao.Cliente_ID"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FilaInspecao"
+                    }
+                  },
+                  "Property": "Score"
+                }
+              },
+              "queryRef": "FilaInspecao.Score"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FilaInspecao"
+                    }
+                  },
+                  "Property": "Faixa"
+                }
+              },
+              "queryRef": "FilaInspecao.Faixa"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FilaInspecao"
+                    }
+                  },
+                  "Property": "Motivo_Principal"
+                }
+              },
+              "queryRef": "FilaInspecao.Motivo_Principal"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FilaInspecao"
+                    }
+                  },
+                  "Property": "Classe"
+                }
+              },
+              "queryRef": "FilaInspecao.Classe"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FilaInspecao"
+                    }
+                  },
+                  "Property": "Subestacao"
+                }
+              },
+              "queryRef": "FilaInspecao.Subestacao"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FilaInspecao"
+                  }
+                },
+                "Property": "Prioridade"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Fila de inspeção do mês (sem quem foi inspecionado nos últimos 6 meses)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

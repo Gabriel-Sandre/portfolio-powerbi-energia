@@ -1,0 +1,94 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "colunasFaixa",
+  "position": {
+    "x": 220,
+    "y": 192,
+    "z": 1700,
+    "height": 300,
+    "width": 515
+  },
+  "visual": {
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fInspecoes"
+                    }
+                  },
+                  "Property": "Faixa_Mes_Anterior"
+                }
+              },
+              "queryRef": "fInspecoes.Faixa_Mes_Anterior",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fBalanco"
+                    }
+                  },
+                  "Property": "Taxa de Acerto Aleatória"
+                }
+              },
+              "queryRef": "fBalanco.Taxa de Acerto Aleatória"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "fBalanco"
+                  }
+                },
+                "Property": "Taxa de Acerto Aleatória"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Backtest (só inspeções aleatórias): irregularidade por faixa do score'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

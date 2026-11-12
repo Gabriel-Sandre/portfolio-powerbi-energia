@@ -1,0 +1,434 @@
+table fInterrupcoes
+	lineageTag: f59fa768-76b6-5314-a561-2660551cd241
+
+	measure 'Interrupções' =
+			COUNTROWS ( fInterrupcoes )
+		formatString: #,0
+		displayFolder: 1. Base
+		lineageTag: d28e029f-ca74-5230-84da-865def90aaf3
+
+	measure 'Interrupções no Indicador' =
+			CALCULATE (
+			    [Interrupções],
+			    fInterrupcoes[Duracao_min] >= 3,
+			    fInterrupcoes[Expurgavel] = "N"
+			)
+		formatString: #,0
+		displayFolder: 1. Base
+		lineageTag: 06ce9b94-5d4f-5dcb-ac9e-1e9e5c75f9e5
+
+	measure 'CHI (h)' =
+			CALCULATE (
+			    SUMX ( fInterrupcoes, fInterrupcoes[Clientes_Afetados] * fInterrupcoes[Duracao_min] / 60 ),
+			    fInterrupcoes[Duracao_min] >= 3,
+			    fInterrupcoes[Expurgavel] = "N"
+			)
+		formatString: #,0.00
+		displayFolder: 1. Base
+		lineageTag: 63ac18a8-e063-5d4e-b4cf-d15518891dcd
+
+	measure CI =
+			CALCULATE (
+			    SUM ( fInterrupcoes[Clientes_Afetados] ),
+			    fInterrupcoes[Duracao_min] >= 3,
+			    fInterrupcoes[Expurgavel] = "N"
+			)
+		formatString: #,0
+		displayFolder: 1. Base
+		lineageTag: 9438d4ea-7882-5018-af59-910eeb68a372
+
+	measure 'Clientes Base (mês)' =
+			CALCULATE (
+			    SUM ( fBaseClientes[Clientes] ),
+			    REMOVEFILTERS ( dCalendario ),
+			    VALUES ( dCalendario[AnoMes] )
+			)
+		formatString: #,0
+		displayFolder: 1. Base
+		lineageTag: b0cc4d33-9702-5270-81a4-dd8c0a2a3686
+
+	measure 'Clientes Atendidos' =
+			VAR UltimoMes = MAX ( fBaseClientes[Data] )
+			RETURN
+			    CALCULATE ( SUM ( fBaseClientes[Clientes] ), fBaseClientes[Data] = UltimoMes )
+		formatString: #,0
+		displayFolder: 1. Base
+		lineageTag: d9dd62b6-4d3a-5ca6-90f9-d0dbd6e988e1
+
+	measure 'DEC (h)' =
+			SUMX (
+			    VALUES ( dCalendario[AnoMes] ),
+			    DIVIDE ( [CHI (h)], [Clientes Base (mês)] )
+			)
+		formatString: #,0.00
+		displayFolder: 2. Indicadores
+		lineageTag: 149e3b34-12fa-51f0-87af-469704c25868
+
+	measure 'FEC (vezes)' =
+			SUMX (
+			    VALUES ( dCalendario[AnoMes] ),
+			    DIVIDE ( [CI], [Clientes Base (mês)] )
+			)
+		formatString: #,0.00
+		displayFolder: 2. Indicadores
+		lineageTag: 5d4e77ae-8134-5b5a-b37d-ee4552753bbd
+
+	measure 'Duração Média por Interrupção (h)' =
+			DIVIDE ( [DEC (h)], [FEC (vezes)] )
+		formatString: #,0.00
+		displayFolder: 2. Indicadores
+		lineageTag: f9ffabb1-1f21-58fd-9c22-2359d8c59201
+
+	measure 'DEC 12 Meses (h)' =
+			VAR UltimaDataComDados = CALCULATE ( MAX ( fInterrupcoes[Data] ), ALL ( fInterrupcoes ) )
+			VAR Referencia = MIN ( MAX ( dCalendario[Date] ), UltimaDataComDados )
+			RETURN
+			    IF (
+			        MIN ( dCalendario[Date] ) <= UltimaDataComDados,
+			        CALCULATE ( [DEC (h)], DATESINPERIOD ( dCalendario[Date], Referencia, -12, MONTH ) )
+			    )
+		formatString: #,0.00
+		displayFolder: 3. Inteligência de tempo
+		lineageTag: 534fddfc-7ca8-5f99-b523-b16cc4259d1d
+
+	measure 'FEC 12 Meses (vezes)' =
+			VAR UltimaDataComDados = CALCULATE ( MAX ( fInterrupcoes[Data] ), ALL ( fInterrupcoes ) )
+			VAR Referencia = MIN ( MAX ( dCalendario[Date] ), UltimaDataComDados )
+			RETURN
+			    IF (
+			        MIN ( dCalendario[Date] ) <= UltimaDataComDados,
+			        CALCULATE ( [FEC (vezes)], DATESINPERIOD ( dCalendario[Date], Referencia, -12, MONTH ) )
+			    )
+		formatString: #,0.00
+		displayFolder: 3. Inteligência de tempo
+		lineageTag: 534453a1-3f06-525f-8e08-8c4b027e5301
+
+	measure 'DEC Acumulado no Ano (h)' =
+			CALCULATE ( [DEC (h)], DATESYTD ( dCalendario[Date] ) )
+		formatString: #,0.00
+		displayFolder: 3. Inteligência de tempo
+		lineageTag: 8e8ffdaf-b7e8-55d7-9685-917536c4e92e
+
+	measure 'FEC Acumulado no Ano (vezes)' =
+			CALCULATE ( [FEC (vezes)], DATESYTD ( dCalendario[Date] ) )
+		formatString: #,0.00
+		displayFolder: 3. Inteligência de tempo
+		lineageTag: e32700e2-203a-5a88-9cb5-58d2baa5313e
+
+	measure 'DEC Ano Anterior (h)' =
+			CALCULATE (
+			    [DEC (h)],
+			    CALCULATETABLE ( SAMEPERIODLASTYEAR ( dCalendario[Date] ), dCalendario[Tem Dados] = TRUE () )
+			)
+		formatString: #,0.00
+		displayFolder: 3. Inteligência de tempo
+		lineageTag: 38bf43d1-6e62-511a-8e18-3d39da7cb31c
+
+	measure 'FEC Ano Anterior (vezes)' =
+			CALCULATE (
+			    [FEC (vezes)],
+			    CALCULATETABLE ( SAMEPERIODLASTYEAR ( dCalendario[Date] ), dCalendario[Tem Dados] = TRUE () )
+			)
+		formatString: #,0.00
+		displayFolder: 3. Inteligência de tempo
+		lineageTag: d6e2fdbe-e785-51e8-b3e5-22872d5e75d9
+
+	measure 'Var DEC vs Ano Anterior %' =
+			DIVIDE ( [DEC (h)] - [DEC Ano Anterior (h)], [DEC Ano Anterior (h)] )
+		formatString: 0.0%
+		displayFolder: 3. Inteligência de tempo
+		lineageTag: 8dc7ccf8-5bf8-5891-b76d-499a799abf09
+
+	measure 'Var FEC vs Ano Anterior %' =
+			DIVIDE ( [FEC (vezes)] - [FEC Ano Anterior (vezes)], [FEC Ano Anterior (vezes)] )
+		formatString: 0.0%
+		displayFolder: 3. Inteligência de tempo
+		lineageTag: 8768a62b-659e-5e87-9cff-2fd1744fa534
+
+	measure 'Limite DEC Anual (h)' =
+			DIVIDE (
+			    SUMX ( dConjuntos, dConjuntos[Limite_DEC_Anual] * dConjuntos[Clientes_Ref] ),
+			    SUM ( dConjuntos[Clientes_Ref] )
+			)
+		formatString: #,0.00
+		displayFolder: 4. Limites regulatórios
+		lineageTag: fa9f26c0-b983-5026-8b36-d8f58013da4e
+
+	measure 'Limite FEC Anual (vezes)' =
+			DIVIDE (
+			    SUMX ( dConjuntos, dConjuntos[Limite_FEC_Anual] * dConjuntos[Clientes_Ref] ),
+			    SUM ( dConjuntos[Clientes_Ref] )
+			)
+		formatString: #,0.00
+		displayFolder: 4. Limites regulatórios
+		lineageTag: 96ec630e-659c-524e-82a5-c31c2d732327
+
+	measure '% do Limite DEC' =
+			DIVIDE ( [DEC 12 Meses (h)], [Limite DEC Anual (h)] )
+		formatString: 0.0%
+		displayFolder: 4. Limites regulatórios
+		lineageTag: da08fc9b-4d30-50de-a630-d5685d177397
+
+	measure '% do Limite FEC' =
+			DIVIDE ( [FEC 12 Meses (vezes)], [Limite FEC Anual (vezes)] )
+		formatString: 0.0%
+		displayFolder: 4. Limites regulatórios
+		lineageTag: aa901328-3656-5cdb-906f-97848d8494e0
+
+	measure 'Folga para o Limite DEC (h)' =
+			[Limite DEC Anual (h)] - [DEC 12 Meses (h)]
+		formatString: #,0.00
+		displayFolder: 4. Limites regulatórios
+		lineageTag: 11654c0f-e3f2-5e79-9c8e-4c76a13cb2b6
+
+	measure 'Status DEC' =
+			SWITCH (
+			    TRUE (),
+			    ISBLANK ( [DEC 12 Meses (h)] ), BLANK (),
+			    [% do Limite DEC] > 1, "Acima do limite",
+			    [% do Limite DEC] > 0.9, "Atenção",
+			    "Dentro do limite"
+			)
+		displayFolder: 4. Limites regulatórios
+		lineageTag: a9ac06cc-832d-517b-af56-37bbc6cbdef1
+
+	measure 'Cor Status DEC' =
+			SWITCH (
+			    [Status DEC],
+			    "Acima do limite", "#C62828",
+			    "Atenção", "#F9A825",
+			    "Dentro do limite", "#2E7D32"
+			)
+		displayFolder: 4. Limites regulatórios
+		lineageTag: c33783eb-697e-52d1-8f91-e48ae04fd300
+
+	measure 'Conjuntos Acima do Limite DEC' =
+			COUNTROWS (
+			    FILTER ( VALUES ( dConjuntos[Conjunto_ID] ), [% do Limite DEC] > 1 )
+			)
+		formatString: #,0
+		displayFolder: 4. Limites regulatórios
+		lineageTag: 5c00dbd1-6dab-5cf0-bf84-451e289dd13b
+
+	measure '% Conjuntos Acima do Limite' =
+			DIVIDE ( [Conjuntos Acima do Limite DEC], COUNTROWS ( VALUES ( dConjuntos[Conjunto_ID] ) ) )
+		formatString: 0.0%
+		displayFolder: 4. Limites regulatórios
+		lineageTag: 98972b16-b7f7-51a9-a999-9b7ebafbe585
+
+	measure 'Ranking DEC Conjunto' =
+			IF (
+			    HASONEVALUE ( dConjuntos[Conjunto] ),
+			    RANKX (
+			        ALLSELECTED ( dConjuntos ),
+			        ROUND ( [DEC 12 Meses (h)], 6 ),
+			        ROUND ( [DEC 12 Meses (h)], 6 ),
+			        DESC,
+			        DENSE
+			    )
+			)
+		formatString: #,0
+		displayFolder: 5. Rankings e Pareto
+		lineageTag: fb19ef2c-1532-5220-a2d0-1b12fd6380dc
+
+	measure 'DEC % Acumulado (Pareto)' =
+			VAR DecCausaAtual = [DEC (h)]
+			VAR DecTotal = CALCULATE ( [DEC (h)], ALLSELECTED ( dCausas[Causa] ) )
+			VAR DecAcumulado =
+			    SUMX (
+			        FILTER ( ALLSELECTED ( dCausas[Causa] ), CALCULATE ( [DEC (h)] ) >= DecCausaAtual ),
+			        CALCULATE ( [DEC (h)] )
+			    )
+			RETURN
+			    IF ( NOT ISBLANK ( DecCausaAtual ), DIVIDE ( DecAcumulado, DecTotal ) )
+		formatString: 0.0%
+		displayFolder: 5. Rankings e Pareto
+		lineageTag: 9edc939d-bee7-5e39-b2b4-d5d0b46fb0b1
+
+	measure 'DEC Top N Causas (h)' =
+			VAR N = SELECTEDVALUE ( 'Top N'[Top N], 5 )
+			VAR TopCausas = TOPN ( N, ALLSELECTED ( dCausas[Causa] ), [DEC (h)], DESC )
+			RETURN
+			    CALCULATE ( [DEC (h)], KEEPFILTERS ( TopCausas ) )
+		formatString: #,0.00
+		displayFolder: 5. Rankings e Pareto
+		lineageTag: c191f00a-6242-5bb0-8b11-a4f37c326bbd
+
+	measure '% DEC Causas Externas' =
+			DIVIDE (
+			    CALCULATE ( [DEC (h)], dCausas[Responsabilidade] = "Externa" ),
+			    [DEC (h)]
+			)
+		formatString: 0.0%
+		displayFolder: 5. Rankings e Pareto
+		lineageTag: eccb8df2-e2a7-5049-9598-9054e753992b
+
+	measure 'DEC Sem Expurgo (h)' =
+			SUMX (
+			    VALUES ( dCalendario[AnoMes] ),
+			    DIVIDE (
+			        CALCULATE (
+			            SUMX ( fInterrupcoes, fInterrupcoes[Clientes_Afetados] * fInterrupcoes[Duracao_min] / 60 ),
+			            fInterrupcoes[Duracao_min] >= 3
+			        ),
+			        [Clientes Base (mês)]
+			    )
+			)
+		formatString: #,0.00
+		displayFolder: 6. Expurgos e qualidade
+		lineageTag: 870aabe3-5d29-5729-9a6e-39bbc113e02d
+
+	measure 'Impacto dos Dias Críticos (h)' =
+			[DEC Sem Expurgo (h)] - [DEC (h)]
+		formatString: #,0.00
+		displayFolder: 6. Expurgos e qualidade
+		lineageTag: 62f2d091-fc9a-525e-8e67-2c0cd543298d
+
+	measure 'Interrupções Curtas (< 3 min)' =
+			CALCULATE ( [Interrupções], fInterrupcoes[Duracao_min] < 3 )
+		formatString: #,0
+		displayFolder: 6. Expurgos e qualidade
+		lineageTag: cb3cb188-958f-528f-84eb-d2b9f2be4bdb
+
+	measure '% DEC Programado' =
+			DIVIDE ( CALCULATE ( [DEC (h)], fInterrupcoes[Programada] = "S" ), [DEC (h)] )
+		formatString: 0.0%
+		displayFolder: 6. Expurgos e qualidade
+		lineageTag: a763d924-c500-5d9b-aac3-829167246da8
+
+	measure 'Título do Painel' =
+			"Continuidade do fornecimento — "
+			    & SELECTEDVALUE ( dConjuntos[Regional], "todas as regionais" )
+			    & " — "
+			    & SELECTEDVALUE ( dCalendario[Ano], "todos os anos" )
+		displayFolder: 7. Textos dinâmicos
+		lineageTag: e9150e27-08a6-57d1-a687-ce2b1e2721ff
+
+	measure 'Resumo Executivo' =
+			VAR Acima = [Conjuntos Acima do Limite DEC]
+			VAR Total = COUNTROWS ( VALUES ( dConjuntos[Conjunto_ID] ) )
+			VAR Variacao = [Var DEC vs Ano Anterior %]
+			RETURN
+			    FORMAT ( Acima, "0" ) & " de " & FORMAT ( Total, "0" )
+			        & " conjuntos estão acima do limite de DEC nos últimos 12 meses. "
+			        & IF (
+			            ISBLANK ( Variacao ),
+			            "",
+			            "O DEC " & IF ( Variacao < 0, "caiu ", "subiu " )
+			                & FORMAT ( ABS ( Variacao ), "0.0%" ) & " em relação ao mesmo período do ano anterior."
+			        )
+		displayFolder: 7. Textos dinâmicos
+		lineageTag: ae5bb031-944c-5d10-8410-bb293ce50d42
+
+	column Interrupcao_ID
+		dataType: int64
+		formatString: 0
+		lineageTag: 7c977c5b-eb63-5713-b22a-da0898b7c227
+		summarizeBy: none
+		sourceColumn: Interrupcao_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Conjunto_ID
+		dataType: string
+		isHidden
+		lineageTag: bfb53039-eb0c-527c-9266-c3a32ae7e30b
+		summarizeBy: none
+		sourceColumn: Conjunto_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Alimentador
+		dataType: string
+		lineageTag: 733e2352-136f-5246-9c3c-44f78925e3d1
+		summarizeBy: none
+		sourceColumn: Alimentador
+
+		annotation SummarizationSetBy = Automatic
+
+	column Causa_ID
+		dataType: int64
+		isHidden
+		lineageTag: 0d8bb84e-d8fa-5984-825b-e7293427f542
+		summarizeBy: none
+		sourceColumn: Causa_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		isHidden
+		lineageTag: b61cc252-70ad-5493-8541-0c7752fb8fc0
+		summarizeBy: none
+		sourceColumn: Data
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data_Hora_Inicio
+		dataType: dateTime
+		formatString: dd/mm/yyyy hh:nn
+		lineageTag: e0419e7c-e1a7-5955-a6a5-21551bde25d7
+		summarizeBy: none
+		sourceColumn: Data_Hora_Inicio
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data_Hora_Fim
+		dataType: dateTime
+		formatString: dd/mm/yyyy hh:nn
+		lineageTag: e29fb717-dc99-5dd7-9e94-a5f7ee821e3c
+		summarizeBy: none
+		sourceColumn: Data_Hora_Fim
+
+		annotation SummarizationSetBy = Automatic
+
+	column Duracao_min
+		dataType: int64
+		formatString: #,0
+		lineageTag: 98be6df2-4cda-5ea3-a937-c8a5eb0c4cd7
+		summarizeBy: none
+		sourceColumn: Duracao_min
+
+		annotation SummarizationSetBy = Automatic
+
+	column Clientes_Afetados
+		dataType: int64
+		formatString: #,0
+		lineageTag: 210441fb-1d25-580f-aba4-b7c3eb79e44d
+		summarizeBy: none
+		sourceColumn: Clientes_Afetados
+
+		annotation SummarizationSetBy = Automatic
+
+	column Programada
+		dataType: string
+		lineageTag: 4255387f-d8b7-560f-92ba-209fb20cc32e
+		summarizeBy: none
+		sourceColumn: Programada
+
+		annotation SummarizationSetBy = Automatic
+
+	column Expurgavel
+		dataType: string
+		lineageTag: e09687ac-7b92-5b29-a00f-b3e0e82ea13f
+		summarizeBy: none
+		sourceColumn: Expurgavel
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fInterrupcoes = m
+		mode: import
+		source =
+				let
+				    Origem = Csv.Document(File.Contents(PastaDados & "\fInterrupcoes.csv"), [Delimiter = ";", Encoding = 65001, QuoteStyle = QuoteStyle.None]),
+				    Cabecalhos = Table.PromoteHeaders(Origem, [PromoteAllScalars = true]),
+				    Tipos = Table.TransformColumnTypes(Cabecalhos, {
+				        {"Interrupcao_ID", Int64.Type}, {"Conjunto_ID", type text}, {"Alimentador", type text},
+				        {"Causa_ID", Int64.Type}, {"Data", type date}, {"Data_Hora_Inicio", type datetime},
+				        {"Data_Hora_Fim", type datetime}, {"Duracao_min", Int64.Type}, {"Clientes_Afetados", Int64.Type},
+				        {"Programada", type text}, {"Expurgavel", type text}}, "pt-BR")
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table

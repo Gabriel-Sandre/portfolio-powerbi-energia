@@ -1,0 +1,4 @@
+expression PastaDados = "C:\Users\gabri\Downloads\portfolio-powerbi-energia\02-medio-continuidade-dec-fec-dax\dados" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: beb1c799-1ae3-5d89-a39c-e80be964e5de
+
+	annotation PBI_ResultType = Text

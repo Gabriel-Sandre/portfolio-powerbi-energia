@@ -1,0 +1,36 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "segPerfil1",
+  "position": {
+    "x": 20,
+    "y": 375,
+    "z": 1300,
+    "height": 130,
+    "width": 180
+  },
+  "visual": {
+    "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dConjuntos"
+                    }
+                  },
+                  "Property": "Perfil"
+                }
+              },
+              "queryRef": "dConjuntos.Perfil"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

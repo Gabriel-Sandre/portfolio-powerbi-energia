@@ -1,0 +1,97 @@
+table dConjuntos
+	lineageTag: 4f73f1e2-b852-5253-a19f-51543ec990e1
+
+	column Conjunto_ID
+		dataType: string
+		isHidden
+		lineageTag: 52e7934e-e4f3-591d-9197-a4f2ea3ea75b
+		summarizeBy: none
+		sourceColumn: Conjunto_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Conjunto
+		dataType: string
+		lineageTag: 9dee3064-22be-5f33-9e09-ecde7b7edf44
+		summarizeBy: none
+		sourceColumn: Conjunto
+
+		annotation SummarizationSetBy = Automatic
+
+	column Municipio
+		dataType: string
+		lineageTag: a982a5b8-e6b1-57ab-ac24-9160725c080a
+		summarizeBy: none
+		sourceColumn: Municipio
+
+		annotation SummarizationSetBy = Automatic
+
+	column Regional
+		dataType: string
+		lineageTag: 2fe578f0-81e9-5bcc-8f03-30a719a0f2bd
+		summarizeBy: none
+		sourceColumn: Regional
+
+		annotation SummarizationSetBy = Automatic
+
+	column Perfil
+		dataType: string
+		lineageTag: 5a018951-c67d-532a-8aa3-121cbca054b8
+		summarizeBy: none
+		sourceColumn: Perfil
+
+		annotation SummarizationSetBy = Automatic
+
+	column Clientes_Ref
+		dataType: int64
+		formatString: #,0
+		lineageTag: c6e4fd07-ff62-5479-877e-9307921b7173
+		summarizeBy: none
+		sourceColumn: Clientes_Ref
+
+		annotation SummarizationSetBy = Automatic
+
+	column Limite_DEC_Anual
+		dataType: double
+		formatString: 0.0
+		lineageTag: 8a298fd6-bddc-5f80-8725-90bdd3f65949
+		summarizeBy: none
+		sourceColumn: Limite_DEC_Anual
+
+		annotation SummarizationSetBy = Automatic
+
+	column Limite_FEC_Anual
+		dataType: double
+		formatString: 0.0
+		lineageTag: 60c74d7e-9524-5dec-9800-4f6f9fa7cc3b
+		summarizeBy: none
+		sourceColumn: Limite_FEC_Anual
+
+		annotation SummarizationSetBy = Automatic
+
+	column Localizacao
+		dataType: string
+		dataCategory: Place
+		lineageTag: a127b35b-0bf8-5bb8-bce3-f07304f9ba59
+		summarizeBy: none
+		sourceColumn: Localizacao
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dConjuntos = m
+		mode: import
+		source =
+				let
+				    Origem = Csv.Document(File.Contents(PastaDados & "\dConjuntos.csv"), [Delimiter = ";", Encoding = 65001, QuoteStyle = QuoteStyle.None]),
+				    Cabecalhos = Table.PromoteHeaders(Origem, [PromoteAllScalars = true]),
+				    Tipos = Table.TransformColumnTypes(Cabecalhos, {
+				        {"Conjunto_ID", type text}, {"Conjunto", type text}, {"Municipio", type text}, {"Regional", type text},
+				        {"Perfil", type text}, {"Clientes_Ref", Int64.Type},
+				        {"Limite_DEC_Anual", type number}, {"Limite_FEC_Anual", type number}}, "pt-BR"),
+				    // o arquivo traz "urbano", "periferia", "interior": deixa com inicial maiúscula para os visuais
+				    PerfilFormatado = Table.TransformColumns(Tipos, {{"Perfil", Text.Proper, type text}}),
+				    Localizacao = Table.AddColumn(PerfilFormatado, "Localizacao", each [Municipio] & ", RJ, Brasil", type text)
+				in
+				    Localizacao
+
+	annotation PBI_ResultType = Table

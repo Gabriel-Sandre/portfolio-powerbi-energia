@@ -1,0 +1,141 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "tabelaArquivos",
+  "position": {
+    "x": 20,
+    "y": 434,
+    "z": 1700,
+    "height": 266,
+    "width": 840
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "LogArquivo"
+                    }
+                  },
+                  "Property": "Arquivo"
+                }
+              },
+              "queryRef": "LogArquivo.Arquivo"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "LogArquivo"
+                    }
+                  },
+                  "Property": "Tipo"
+                }
+              },
+              "queryRef": "LogArquivo.Tipo"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "LogArquivo"
+                    }
+                  },
+                  "Property": "Linhas_Lidas"
+                }
+              },
+              "queryRef": "LogArquivo.Linhas_Lidas"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "LogArquivo"
+                    }
+                  },
+                  "Property": "Linhas_Carregadas"
+                }
+              },
+              "queryRef": "LogArquivo.Linhas_Carregadas"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "LogArquivo"
+                    }
+                  },
+                  "Property": "Linhas_Rejeitadas"
+                }
+              },
+              "queryRef": "LogArquivo.Linhas_Rejeitadas"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "LogArquivo"
+                    }
+                  },
+                  "Property": "Status"
+                }
+              },
+              "queryRef": "LogArquivo.Status"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "LogArquivo"
+                  }
+                },
+                "Property": "Linhas_Rejeitadas"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Arquivos processados'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

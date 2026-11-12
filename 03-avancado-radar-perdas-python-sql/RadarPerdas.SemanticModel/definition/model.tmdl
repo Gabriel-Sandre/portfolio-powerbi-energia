@@ -1,0 +1,27 @@
+model Model
+	culture: pt-BR
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures
+	sourceQueryCulture: pt-BR
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["Servidor", "Banco", "dAlimentador", "dCliente", "fBalanco", "fScore", "fInspecoes", "FilaInspecao", "LogExecucao", "LogArquivo", "Rejeicoes"]
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table dAlimentador
+ref table dCliente
+ref table fBalanco
+ref table fScore
+ref table fInspecoes
+ref table FilaInspecao
+ref table LogExecucao
+ref table LogArquivo
+ref table Rejeicoes
+ref table dCalendario
+ref table 'Tarifa Referencia'
+

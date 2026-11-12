@@ -1,0 +1,165 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 626.55026152596633,
+            "y": -50
+          },
+          "nodeIndex": "dAlimentador",
+          "nodeLineageTag": "8e31a5aa-3b15-5a21-aa9d-529d8c0da02c",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 607.56816546757636,
+            "y": 696.32775395648446
+          },
+          "nodeIndex": "dCalendario",
+          "nodeLineageTag": "769819f6-b052-5b23-9ec2-7260681e91d4",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 50,
+            "y": 316.95475689191244
+          },
+          "nodeIndex": "dCliente",
+          "nodeLineageTag": "03548fa7-f93c-5944-b35b-15cdaacc1a5f",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 762.11752951735969,
+            "y": 226.20361763129313
+          },
+          "nodeIndex": "fBalanco",
+          "nodeLineageTag": "971ccc6c-2fe4-5ddd-b8ff-8cfd45c913e5",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 339.2780994942982,
+            "y": -14.238602966917597
+          },
+          "nodeIndex": "FilaInspecao",
+          "nodeLineageTag": "979e85aa-70f5-5c81-9e94-a9cdc563b91b",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 432.63582275717744,
+            "y": 341.1272319081761
+          },
+          "nodeIndex": "fInspecoes",
+          "nodeLineageTag": "b2c3e333-fe46-500e-b404-0a0cfbfea6b7",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 282.54138405219567,
+            "y": 698.31094689901033
+          },
+          "nodeIndex": "fScore",
+          "nodeLineageTag": "abeb033c-1949-553e-ad38-6415ce467102",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1614.5005795320535,
+            "y": 308.73312446958244
+          },
+          "nodeIndex": "LogArquivo",
+          "nodeLineageTag": "cc336127-efaf-57ad-9a8b-e93b83cc73df",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1330.319090710545,
+            "y": 339.57782242942795
+          },
+          "nodeIndex": "LogExecucao",
+          "nodeLineageTag": "71bb744a-e68b-583d-ba2f-e4338353bf01",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1046.1175295173598,
+            "y": 398.71823524918261
+          },
+          "nodeIndex": "Rejeicoes",
+          "nodeLineageTag": "82f9483c-6bba-5157-a9bf-eb01fc48530f",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1848.5005795320535,
+            "y": 424.15547344950517
+          },
+          "nodeIndex": "Tarifa Referencia",
+          "nodeLineageTag": "e1b5b6c6-8000-543f-9a97-aa37b612dc0c",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "Todas as tabelas",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "Todas as tabelas",
+  "defaultDiagram": "Todas as tabelas"
+}
