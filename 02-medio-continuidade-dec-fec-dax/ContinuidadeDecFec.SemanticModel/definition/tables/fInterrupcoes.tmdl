@@ -80,7 +80,7 @@ table fInterrupcoes
 		lineageTag: f9ffabb1-1f21-58fd-9c22-2359d8c59201
 
 	measure 'DEC 12 Meses (h)' =
-			VAR UltimaDataComDados = CALCULATE ( MAX ( fInterrupcoes[Data] ), ALL ( fInterrupcoes ) )
+			VAR UltimaDataComDados = EOMONTH ( CALCULATE ( MAX ( fBaseClientes[Data] ), ALL ( fBaseClientes ) ), 0 )
 			VAR Referencia = MIN ( MAX ( dCalendario[Date] ), UltimaDataComDados )
 			RETURN
 			    IF (
@@ -92,7 +92,7 @@ table fInterrupcoes
 		lineageTag: 534fddfc-7ca8-5f99-b523-b16cc4259d1d
 
 	measure 'FEC 12 Meses (vezes)' =
-			VAR UltimaDataComDados = CALCULATE ( MAX ( fInterrupcoes[Data] ), ALL ( fInterrupcoes ) )
+			VAR UltimaDataComDados = EOMONTH ( CALCULATE ( MAX ( fBaseClientes[Data] ), ALL ( fBaseClientes ) ), 0 )
 			VAR Referencia = MIN ( MAX ( dCalendario[Date] ), UltimaDataComDados )
 			RETURN
 			    IF (

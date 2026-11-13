@@ -48,6 +48,7 @@ Estourar o limite significa compensação financeira aos clientes, pressão regu
 | `REMOVEFILTERS` + `VALUES` para mudar a granularidade do denominador | `Clientes Base (mês)` |
 | Inteligência de tempo: `DATESINPERIOD`, `DATESYTD`, `SAMEPERIODLASTYEAR` | `DEC 12 Meses`, `DEC Acumulado no Ano`, `DEC Ano Anterior` |
 | Tratamento de ano incompleto (armadilha clássica) | `DEC Ano Anterior (h)` com `CALCULATETABLE` |
+| Corte "até onde há dados" ancorado na carga, e não nos eventos | `dCalendario[Tem Dados]` e `DEC 12 Meses`: fim do último mês da `fBaseClientes`, porque um fim de mês sem interrupção faria o corte recuar (sugestão recebida num comentário do LinkedIn) |
 | Média **ponderada** em vez de média simples | `Limite DEC Anual (h)` |
 | `RANKX` + `ALLSELECTED` | `Ranking DEC Conjunto` |
 | Pareto com acumulado | `DEC % Acumulado (Pareto)` |

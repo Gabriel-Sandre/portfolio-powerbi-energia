@@ -84,8 +84,12 @@ DIVIDE ( [DEC (h)], [FEC (vezes)] )
 // Janela móvel de 12 meses terminando no fim do período visível. É o número comparável ao
 // limite ANUAL. Se o filtro for "2026" (que só tem dados até outubro), a janela termina em
 // outubro (último dado), e não em dezembro; meses futuros ficam em branco.
+// O "último dado" é o FIM DO ÚLTIMO MÊS CARREGADO na fBaseClientes, e não a data da última
+// interrupção: numa base de eventos, um fim de mês sem ocorrência faria o corte recuar.
+// A fBaseClientes chega todo mês, com ou sem interrupção. (Ajuste sugerido num comentário
+// do LinkedIn; em produção, o ideal é uma tabela de controle com a data da última carga.)
 DEC 12 Meses (h) =
-VAR UltimaDataComDados = CALCULATE ( MAX ( fInterrupcoes[Data] ), ALL ( fInterrupcoes ) )
+VAR UltimaDataComDados = EOMONTH ( CALCULATE ( MAX ( fBaseClientes[Data] ), ALL ( fBaseClientes ) ), 0 )
 VAR Referencia = MIN ( MAX ( dCalendario[Date] ), UltimaDataComDados )
 RETURN
     IF (
@@ -94,7 +98,7 @@ RETURN
     )
 
 FEC 12 Meses (vezes) =
-VAR UltimaDataComDados = CALCULATE ( MAX ( fInterrupcoes[Data] ), ALL ( fInterrupcoes ) )
+VAR UltimaDataComDados = EOMONTH ( CALCULATE ( MAX ( fBaseClientes[Data] ), ALL ( fBaseClientes ) ), 0 )
 VAR Referencia = MIN ( MAX ( dCalendario[Date] ), UltimaDataComDados )
 RETURN
     IF (

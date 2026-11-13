@@ -23,7 +23,9 @@ RETURN
                      & "/" & RIGHT ( YEAR ( [Date] ), 2 ),
         "Trimestre", "T" & QUARTER ( [Date] ),
         "Período Climático", IF ( MONTH ( [Date] ) IN { 12, 1, 2, 3 }, "Verão (chuvas)", "Demais meses" ),
-        "Tem Dados", [Date] <= MAX ( fInterrupcoes[Data] )
+        // Corte = fim do último mês carregado na fBaseClientes (chega todo mês, com ou sem
+        // interrupção). Usar a última interrupção faria o corte recuar num fim de mês tranquilo.
+        "Tem Dados", [Date] <= EOMONTH ( MAX ( fBaseClientes[Data] ), 0 )
     )
 
 
